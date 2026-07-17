@@ -1,0 +1,47 @@
+name: Update Curaçao flights
+
+# Fetches the Curaçao (TNCC) flight board from AeroDataBox and commits it to
+# data/flights.json, which the dashboard reads same-origin (no API key in the
+# public HTML). Runs on a schedule and can be triggered manually.
+
+on:
+  schedule:
+    # Every 6 hours = 4 calls/day = ~120 calls/month — within the 150/month free tier.
+    - cron: '0 */6 * * *'
+  workflow_dispatch: {}     # "Run workflow" button for an on-demand refresh
+
+permissions:
+  contents: write
+
+concurrency:
+  group: flights-update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Fetch flights from AeroDataBox
+        continue-on-error: true
+        env:
+          AERODATABOX_KEY: ${{ secrets.AERODATABOX_KEY }}
+        run: node scripts/fetch-flights.mjs
+
+      - name: Commit updated flight data
+        continue-on-error: true
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet -- data/flights.json; then
+            echo "No flight changes — nothing to commit."
+            exit 0
+          fi
+          git add data/flights.json
+          git commit -m "data: refresh Curaçao flights [skip ci]"
+          git push

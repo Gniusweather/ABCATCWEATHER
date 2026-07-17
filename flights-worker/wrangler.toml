@@ -1,0 +1,13 @@
+name = "rwc-atc-proxy"
+main = "worker.js"
+compatibility_date = "2024-11-01"
+
+# Lock CORS to the dashboard's origin (recommended — stops other sites
+# from consuming your API quota through this Worker).
+[vars]
+ALLOWED_ORIGIN = "https://curacaoweatheratc.uk"
+
+# Secrets are NOT stored here. Set them once after `wrangler login`:
+#   wrangler secret put CHECKWX_KEY
+#   wrangler secret put WEATHERAPI_KEY
+#   wrangler secret put AERODATABOX_KEY
