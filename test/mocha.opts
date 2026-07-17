@@ -1,7 +1,0 @@
---require jsdom-global/register
---require @babel/register
---require ignore-styles
---require test/testSetup.js
---timeout 2000
---exit
-src/**/*.spec.js

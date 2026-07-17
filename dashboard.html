@@ -1,0 +1,4783 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="theme-color" content="#05080f"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="ATC Dashboard"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<title>ATC &amp; WEATHER DASHBOARD — Curaçao</title>
+<!-- Superseded by index.html; kept only for backward-compat links. -->
+<meta name="robots" content="noindex, follow"/>
+<link rel="canonical" href="https://curacaoweatheratc.uk/"/>
+
+<!-- Inline manifest (no separate file needed) -->
+<link rel="manifest" href='data:application/manifest+json,{"name":"ATC %26 Weather Dashboard","short_name":"ATC Dashboard","description":"ATC %26 weather dashboard for Cura%C3%A7ao, Aruba, Bonaire","start_url":".","display":"standalone","orientation":"any","background_color":"%2304060b","theme_color":"%2305080f","icons":[{"src":"data:image/svg%2Bxml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 192 192%22%3E%3Crect width=%22192%22 height=%22192%22 rx=%2240%22 fill=%22%2304060b%22/%3E%3Ccircle cx=%2296%22 cy=%2296%22 r=%2270%22 fill=%22none%22 stroke=%22%2322d3ee%22 stroke-width=%224%22/%3E%3Ccircle cx=%2296%22 cy=%2296%22 r=%2245%22 fill=%22none%22 stroke=%22%2322d3ee%22 stroke-width=%222%22 opacity=%220.5%22/%3E%3Cline x1=%2296%22 y1=%2226%22 x2=%2296%22 y2=%22166%22 stroke=%22%2322d3ee%22 stroke-width=%221%22 opacity=%220.4%22/%3E%3Cline x1=%2226%22 y1=%2296%22 x2=%22166%22 y2=%2296%22 stroke=%22%2322d3ee%22 stroke-width=%221%22 opacity=%220.4%22/%3E%3Cpath d=%22M96 96 L150 60 Z%22 fill=%22none%22 stroke=%22%2322d3ee%22 stroke-width=%223%22/%3E%3Ccircle cx=%2296%22 cy=%2296%22 r=%226%22 fill=%22%2322d3ee%22/%3E%3C/svg%3E","sizes":"192x192","type":"image/svg+xml","purpose":"any"},{"src":"data:image/svg%2Bxml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22%3E%3Crect width=%22512%22 height=%22512%22 rx=%22100%22 fill=%22%2304060b%22/%3E%3Ccircle cx=%22256%22 cy=%22256%22 r=%22186%22 fill=%22none%22 stroke=%22%2322d3ee%22 stroke-width=%2210%22/%3E%3Ccircle cx=%22256%22 cy=%22256%22 r=%22120%22 fill=%22none%22 stroke=%22%2322d3ee%22 stroke-width=%225%22 opacity=%220.5%22/%3E%3Cline x1=%22256%22 y1=%2270%22 x2=%22256%22 y2=%22442%22 stroke=%22%2322d3ee%22 stroke-width=%222%22 opacity=%220.4%22/%3E%3Cline x1=%2270%22 y1=%22256%22 x2=%22442%22 y2=%22256%22 stroke=%22%2322d3ee%22 stroke-width=%222%22 opacity=%220.4%22/%3E%3Cpath d=%22M256 256 L400 160 Z%22 fill=%22none%22 stroke=%22%2322d3ee%22 stroke-width=%228%22/%3E%3Ccircle cx=%22256%22 cy=%22256%22 r=%2216%22 fill=%22%2322d3ee%22/%3E%3C/svg%3E","sizes":"512x512","type":"image/svg+xml","purpose":"any"}]}'/>
+
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+
+<style>
+:root{
+  /* Day palette — refined deep navy with electric cyan */
+  --accent:#5ab8ff;
+  --accent-bright:#9bd4ff;
+  --accent-dim:#1e4a73;
+  --accent-glow:rgba(90,184,255,0.10);
+  --cyan:#22d3ee;
+  --cyan-glow:rgba(34,211,238,0.22);
+  --green:#4ade80;
+  --amber:#fbbf24;
+  --red:#f87171;
+  --magenta:#e879f9;
+
+  --bg:#04060b;
+  --bg2:#080c14;
+  --bg3:#0c1320;
+  --panel:rgba(12,19,32,0.65);
+  --panel-hi:rgba(18,28,46,0.85);
+
+  --border:rgba(90,184,255,0.08);
+  --border-hi:rgba(90,184,255,0.18);
+  --border-bright:rgba(34,211,238,0.4);
+
+  --text:#cbd9ec;
+  --text-dim:#7a8fa8;
+  --muted:#3d536f;
+
+  --display:'Space Grotesk',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --body:'Inter',system-ui,sans-serif;
+
+  --radius:6px;
+  --radius-lg:10px;
+  --shadow-panel:0 1px 0 rgba(255,255,255,0.03) inset, 0 0 0 1px rgba(90,184,255,0.04), 0 20px 40px -20px rgba(0,0,0,0.5);
+  --shadow-glow:0 0 30px -8px var(--cyan-glow);
+}
+
+/* ── NIGHT MODE — warm tactical amber ── */
+body.night{
+  --accent:#ff8a4c;
+  --accent-bright:#ffb088;
+  --accent-dim:#5a2810;
+  --accent-glow:rgba(255,138,76,0.10);
+  --cyan:#ff6b35;
+  --cyan-glow:rgba(255,107,53,0.22);
+  --green:#ff8c42;
+  --amber:#ffaa55;
+  --magenta:#ff5577;
+
+  --bg:#05030a;
+  --bg2:#0c0604;
+  --bg3:#150a06;
+  --panel:rgba(20,8,4,0.7);
+  --panel-hi:rgba(28,12,6,0.88);
+
+  --border:rgba(255,138,76,0.08);
+  --border-hi:rgba(255,138,76,0.2);
+  --border-bright:rgba(255,107,53,0.4);
+
+  --text:#e8c8b0;
+  --text-dim:#a08070;
+  --muted:#5a3525;
+}
+body.night::before{
+  background-image:
+    linear-gradient(rgba(255,107,53,0.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,107,53,0.035) 1px,transparent 1px);
+}
+body.night::after{
+  background:
+    radial-gradient(ellipse 70% 35% at 50% -5%,rgba(255,107,53,0.08) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 50% at 100% 100%,rgba(255,68,0,0.04) 0%,transparent 60%);
+}
+body.night .scanline{
+  background:linear-gradient(transparent,rgba(255,107,53,0.025) 50%,transparent);
+}
+
+/* ── RESET ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+html,body{
+  min-height:100%;
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--body);
+  font-feature-settings:'cv11','ss01','ss03';
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+
+/* ── ATMOSPHERIC GRID ── */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(90,184,255,0.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(90,184,255,0.035) 1px,transparent 1px);
+  background-size:48px 48px;
+  pointer-events:none;z-index:0;
+  mask-image:radial-gradient(ellipse 100% 80% at 50% 30%,#000 30%,transparent 95%);
+}
+
+/* ── AMBIENT GLOW ── */
+body::after{
+  content:'';position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse 80% 40% at 50% -10%,rgba(34,211,238,0.08) 0%,transparent 60%),
+    radial-gradient(ellipse 40% 30% at 0% 100%,rgba(90,184,255,0.05) 0%,transparent 60%),
+    radial-gradient(ellipse 40% 30% at 100% 100%,rgba(34,211,238,0.04) 0%,transparent 60%);
+  pointer-events:none;z-index:0;
+}
+
+/* ── SCANLINE SWEEP ── */
+.scanline{
+  position:fixed;top:-200px;left:0;right:0;
+  height:200px;
+  background:linear-gradient(transparent,rgba(34,211,238,0.025) 50%,transparent);
+  animation:scanSweep 14s linear infinite;
+  pointer-events:none;z-index:1;
+}
+@keyframes scanSweep{
+  from{top:-200px}
+  to{top:100vh}
+}
+
+/* ── REFRESH BAR ── */
+.refresh-bar{
+  position:relative;z-index:10;
+  height:2px;
+  background:rgba(34,211,238,0.06);
+  overflow:hidden;
+}
+.refresh-progress{
+  height:100%;width:0%;
+  background:linear-gradient(90deg,transparent,var(--accent-dim) 20%,var(--cyan));
+  box-shadow:0 0 10px var(--cyan),0 0 20px var(--cyan-glow);
+  transition:width 1s linear;
+}
+
+/* ── HEADER ── */
+header{
+  position:relative;z-index:10;
+  display:grid;grid-template-columns:1fr auto 1fr;
+  align-items:center;
+  height:64px;padding:0 18px;
+  background:linear-gradient(180deg,rgba(8,12,20,0.95) 0%,rgba(4,6,11,0.92) 100%);
+  border-bottom:1px solid var(--border-hi);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+}
+header::before{
+  content:'';position:absolute;left:0;right:0;bottom:-1px;
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--cyan) 20%,var(--cyan) 80%,transparent);
+  opacity:.5;
+  box-shadow:0 0 20px var(--cyan-glow);
+}
+
+.header-title{
+  grid-column:2;
+  font-family:var(--display);font-weight:700;font-size:.78rem;
+  letter-spacing:.32em;text-transform:uppercase;
+  color:var(--accent-bright);
+  text-shadow:0 0 30px rgba(155,212,255,0.4);
+  white-space:nowrap;text-align:center;padding:0 14px;
+  position:relative;
+}
+.header-title::before,.header-title::after{
+  content:'';position:absolute;top:50%;width:24px;height:1px;
+  background:var(--border-hi);
+}
+.header-title::before{right:100%;margin-right:14px}
+.header-title::after{left:100%;margin-left:14px}
+
+/* ── CLOCKS ── */
+.clock-display{display:flex;gap:8px;align-items:center}
+.clock-block{
+  display:flex;flex-direction:column;align-items:center;
+  padding:7px 14px;
+  background:linear-gradient(180deg,rgba(0,0,0,0.4),rgba(0,0,0,0.2));
+  border:1px solid var(--border-hi);border-radius:var(--radius);
+  line-height:1.1;
+  position:relative;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.04);
+}
+.clock-time{
+  font-family:var(--mono);font-size:1.05rem;font-weight:600;
+  color:var(--cyan);
+  text-shadow:0 0 24px rgba(34,211,238,0.6);
+  letter-spacing:.06em;
+  font-variant-numeric:tabular-nums;
+}
+.clock-label{
+  font-family:var(--mono);font-size:.5rem;letter-spacing:.22em;
+  color:var(--text-dim);text-transform:uppercase;
+  margin-top:4px;font-weight:500;
+}
+
+/* ── HEADER BUTTONS ── */
+.header-actions{
+  display:flex;justify-content:flex-end;gap:8px;align-items:center;
+}
+.night-btn,.toggle-container{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:7px 12px;
+  background:linear-gradient(180deg,rgba(0,0,0,0.4),rgba(0,0,0,0.2));
+  border:1px solid var(--border-hi);border-radius:var(--radius);
+  font-family:var(--mono);font-size:.65rem;letter-spacing:.16em;font-weight:500;
+  text-transform:uppercase;color:var(--accent-bright);
+  cursor:pointer;
+  user-select:none;
+  transition:all .2s cubic-bezier(.4,0,.2,1);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.04);
+}
+.night-btn:hover,.toggle-container:hover{
+  border-color:var(--border-bright);
+  color:var(--cyan);
+  box-shadow:0 0 20px var(--cyan-glow),inset 0 1px 0 rgba(255,255,255,0.06);
+  transform:translateY(-1px);
+}
+
+.lock-led{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--accent);
+  transition:all .25s;
+  box-shadow:0 0 6px currentColor;
+  color:var(--accent);
+}
+.lock-led.unlocked{
+  background:var(--cyan);
+  color:var(--cyan);
+  box-shadow:0 0 10px var(--cyan),0 0 20px var(--cyan-glow);
+  animation:pulseLed 1.6s ease-in-out infinite;
+}
+@keyframes pulseLed{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* ── TOPBAR ── */
+.topbar{
+  position:relative;z-index:10;
+  display:flex;justify-content:flex-end;
+  padding:10px 20px;
+  background:rgba(4,6,11,0.7);
+  border-bottom:1px solid var(--border);
+  gap:8px;flex-wrap:wrap;
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+.topbar-right{display:flex;gap:8px;flex-wrap:wrap}
+
+/* ── BUTTONS ── */
+.btn{
+  display:inline-flex;align-items:center;gap:7px;
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;font-weight:500;
+  text-transform:uppercase;color:var(--accent-bright);
+  border:1px solid var(--border-hi);border-radius:var(--radius);
+  background:linear-gradient(180deg,var(--accent-glow),rgba(0,0,0,0.3));
+  padding:8px 14px;
+  text-decoration:none;
+  transition:all .2s cubic-bezier(.4,0,.2,1);
+  position:relative;overflow:hidden;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.04);
+}
+.btn::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(34,211,238,0.12),transparent);
+  transform:translateX(-100%);
+  transition:transform .5s;
+}
+.btn:hover{
+  border-color:var(--border-bright);color:var(--cyan);
+  box-shadow:0 0 20px var(--cyan-glow),inset 0 1px 0 rgba(255,255,255,0.08);
+  transform:translateY(-1px);
+}
+.btn:hover::before{transform:translateX(100%)}
+
+/* Featured button — persistent glow, calls attention */
+.btn-featured{
+  border-color:var(--border-bright);
+  color:var(--cyan);
+  background:linear-gradient(180deg,rgba(34,211,238,0.14),rgba(34,211,238,0.04));
+  box-shadow:
+    0 0 18px var(--cyan-glow),
+    0 0 4px rgba(34,211,238,0.25),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+  animation:featuredPulse 3s ease-in-out infinite;
+  position:relative;
+}
+.btn-featured::after{
+  content:'';position:absolute;inset:-1px;border-radius:var(--radius);
+  pointer-events:none;
+  background:linear-gradient(120deg,transparent 30%,rgba(34,211,238,0.18) 50%,transparent 70%);
+  background-size:200% 100%;
+  animation:featuredSweep 4s linear infinite;
+  mix-blend-mode:screen;
+}
+.btn-featured:hover{
+  color:var(--cyan);
+  box-shadow:
+    0 0 28px var(--cyan-glow),
+    0 0 10px rgba(34,211,238,0.4),
+    inset 0 1px 0 rgba(255,255,255,0.12);
+  transform:translateY(-1px);
+}
+@keyframes featuredPulse{
+  0%,100%{
+    box-shadow:
+      0 0 18px var(--cyan-glow),
+      0 0 4px rgba(34,211,238,0.25),
+      inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+  50%{
+    box-shadow:
+      0 0 26px var(--cyan-glow),
+      0 0 10px rgba(34,211,238,0.45),
+      inset 0 1px 0 rgba(255,255,255,0.12);
+  }
+}
+@keyframes featuredSweep{
+  0%  {background-position:200% 0}
+  100%{background-position:-200% 0}
+}
+
+/* ── TAB BAR — animated, multi-layer ── */
+.tab-bar{
+  position:relative;z-index:10;
+  display:flex;flex-wrap:wrap;
+  gap:6px;
+  padding:8px 14px;
+  border-radius:0 0 14px 14px;
+  margin:0 12px;
+  background:linear-gradient(180deg,rgba(6,24,42,0.7),rgba(4,16,28,0.6));
+  border:1px solid var(--border);
+  border-top:none;
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  box-shadow:0 1px 0 rgba(255,255,255,0.04) inset, 0 0 0 1px rgba(90,184,255,0.04), 0 20px 40px -20px rgba(0,0,0,0.5);
+  overflow:hidden;
+}
+/* Subtle background sheen that drifts across the tab bar */
+.tab-bar::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(120deg,transparent 30%,rgba(85,193,255,0.04) 50%,transparent 70%);
+  background-size:200% 100%;
+  animation:tabsSheen 9s linear infinite;
+  pointer-events:none;
+}
+body.night .tab-bar::before{
+  background:linear-gradient(120deg,transparent 30%,rgba(204,136,0,0.04) 50%,transparent 70%);
+  background-size:200% 100%;
+}
+@keyframes tabsSheen{
+  0%  {background-position:200% 0;}
+  100%{background-position:-100% 0;}
+}
+
+.tab-btn{
+  flex:1;min-width:84px;
+  padding:11px 14px;
+  border:none;background:transparent;
+  color:var(--text-dim);
+  font-family:var(--mono);font-weight:600;font-size:.66rem;
+  letter-spacing:.18em;text-transform:uppercase;
+  cursor:pointer;
+  border-radius:10px;
+  transition:color .3s ease, background .3s ease, transform .2s ease;
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  position:relative;overflow:hidden;z-index:1;
+  user-select:none;
+  white-space:nowrap;
+}
+.tab-btn:hover{
+  color:var(--cyan);
+  background:rgba(85,193,255,0.05);
+  transform:translateY(-1px);
+}
+body.night .tab-btn:hover{background:rgba(204,136,0,0.06);}
+
+.tab-pane{display:none}
+.tab-pane.active{display:block}
+
+.tab-key{
+  font-family:var(--mono);font-size:.5rem;letter-spacing:.5px;
+  padding:2px 5px;border-radius:4px;
+  background:rgba(0,0,0,0.25);color:rgba(255,255,255,0.6);
+  border:none;
+  transition:all .3s;
+  font-weight:600;
+}
+.tab-btn.active .tab-key{
+  background:rgba(255,255,255,0.18);
+  color:#fff;
+  box-shadow:0 0 8px rgba(255,255,255,0.3);
+}
+
+/* ── LAYOUT ── */
+.layout{
+  position:relative;z-index:5;
+  display:grid;grid-template-columns:repeat(12,1fr);
+  gap:14px;padding:16px 20px 36px;
+  max-width:1800px;margin:0 auto;
+}
+.full{grid-column:1/-1}
+.col-6{grid-column:span 6}
+
+/* ── SECTION TITLE ── */
+.section-title{
+  display:flex;align-items:center;gap:12px;
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.28em;font-weight:500;
+  text-transform:uppercase;color:var(--text-dim);
+  padding:14px 4px 10px;
+}
+.section-title::before{
+  content:'';display:inline-block;
+  width:3px;height:14px;
+  background:var(--cyan);
+  box-shadow:0 0 10px var(--cyan);
+  border-radius:2px;flex-shrink:0;
+}
+.section-title::after{
+  content:'';flex:1;height:1px;
+  background:linear-gradient(90deg,var(--border-hi) 0%,transparent 60%);
+}
+
+/* Data freshness badge */
+.data-badge{
+  font-family:var(--mono);font-size:.5rem;letter-spacing:.14em;font-weight:600;
+  padding:3px 8px;border-radius:3px;
+  border:1px solid var(--green);color:var(--green);
+  animation:pulseBadge 2.5s ease-in-out infinite;
+  flex-shrink:0;
+  background:rgba(74,222,128,0.06);
+}
+.data-badge.loading{
+  border-color:var(--muted);color:var(--text-dim);
+  background:transparent;animation:none;
+}
+.data-badge.error{
+  border-color:var(--red);color:var(--red);
+  background:rgba(248,113,113,0.06);animation:none;
+}
+@keyframes pulseBadge{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* ── PANEL ── */
+.panel{
+  border:1px solid var(--border);
+  background:linear-gradient(180deg,var(--panel),var(--bg2));
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+  box-shadow:var(--shadow-panel);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+.panel-body{padding:14px;display:flex;gap:10px;flex-wrap:wrap}
+
+/* ── RADAR BOX ── */
+.radar-box{
+  position:relative;width:100%;height:380px;
+  border:1px solid var(--border-hi);border-radius:var(--radius-lg);
+  overflow:hidden;background:#000;
+  box-shadow:
+    inset 0 0 80px rgba(0,0,0,0.8),
+    0 0 0 1px rgba(34,211,238,0.06),
+    0 20px 40px -20px rgba(0,0,0,0.6);
+}
+.radar-box::before{
+  content:'';position:absolute;inset:0;border-radius:var(--radius-lg);
+  background:
+    linear-gradient(135deg,var(--cyan) 0%,transparent 14px) top left    /14px 14px no-repeat,
+    linear-gradient(225deg,var(--cyan) 0%,transparent 14px) top right   /14px 14px no-repeat,
+    linear-gradient(315deg,var(--cyan) 0%,transparent 14px) bottom right/14px 14px no-repeat,
+    linear-gradient( 45deg,var(--cyan) 0%,transparent 14px) bottom left /14px 14px no-repeat;
+  opacity:.25;pointer-events:none;z-index:5;
+  filter:drop-shadow(0 0 4px var(--cyan));
+}
+.radar-box iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.overlay-blocker{position:absolute;inset:0;z-index:1000;background:transparent}
+
+/* ── METAR CARDS (compact, TAF-style) ── */
+.metar-strip{display:flex;flex-direction:column;gap:12px;padding:14px}
+.metar-card{
+  border:1px solid var(--border);border-radius:var(--radius);
+  background:linear-gradient(180deg,rgba(0,0,0,0.5),rgba(8,12,20,0.4));
+  overflow:hidden;position:relative;
+  transition:border-color .2s;
+}
+.metar-card:hover{border-color:var(--border-hi)}
+.metar-card::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;
+  width:3px;
+  background:linear-gradient(180deg,var(--cyan),var(--accent));
+  box-shadow:0 0 14px var(--cyan);
+}
+
+.metar-header{
+  display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+  padding:12px 14px 8px 18px;
+}
+.metar-icao{
+  font-family:var(--display);font-size:.95rem;font-weight:700;
+  letter-spacing:.18em;color:var(--cyan);
+  text-shadow:0 0 20px rgba(34,211,238,0.45);
+}
+.metar-airport{
+  font-family:var(--mono);font-size:.55rem;letter-spacing:.16em;
+  color:var(--text-dim);font-weight:500;
+}
+.metar-cat-pill{
+  margin-left:auto;
+  display:inline-flex;align-items:center;gap:8px;
+  padding:4px 10px;border-radius:3px;
+  border:1px solid currentColor;
+  font-family:var(--display);font-size:.68rem;font-weight:700;
+  letter-spacing:.14em;
+}
+.metar-cat-pill .metar-cond{
+  font-family:var(--mono);font-size:.5rem;letter-spacing:.14em;
+  color:var(--text-dim);text-transform:uppercase;font-weight:500;
+  border-left:1px solid var(--border-hi);padding-left:8px;
+}
+
+.metar-raw{
+  font-family:var(--mono);font-size:.6rem;color:var(--accent-bright);
+  line-height:1.7;letter-spacing:.04em;word-break:break-all;
+  padding:8px 14px 8px 18px;
+  border-top:1px solid var(--border);
+  background:rgba(0,0,0,0.4);font-weight:500;
+}
+
+.metar-grid{
+  display:grid;
+  grid-template-columns:repeat(10,1fr);
+  border-top:1px solid var(--border);
+  background:rgba(0,0,0,0.2);
+}
+.metar-cell{
+  padding:8px 10px;
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;justify-content:center;
+  min-width:0;
+}
+.metar-cell:last-child{border-right:none}
+.metar-cell-lbl{
+  font-family:var(--mono);font-size:.44rem;letter-spacing:.2em;font-weight:600;
+  text-transform:uppercase;color:var(--text-dim);margin-bottom:3px;
+  white-space:nowrap;
+}
+.metar-cell-val{
+  font-family:var(--display);font-size:.78rem;font-weight:600;
+  color:var(--accent-bright);line-height:1.1;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.metar-cell-sub{
+  font-family:var(--mono);font-size:.46rem;color:var(--text-dim);
+  margin-top:2px;font-weight:500;white-space:nowrap;
+}
+
+.metar-clouds-row{
+  display:flex;align-items:center;gap:14px;
+  padding:7px 14px 7px 18px;
+  border-top:1px solid var(--border);
+  background:rgba(0,0,0,0.25);
+  font-family:var(--mono);font-size:.58rem;color:var(--text);
+  font-weight:500;
+}
+.metar-clouds-row .lbl{
+  font-size:.46rem;letter-spacing:.2em;font-weight:600;
+  text-transform:uppercase;color:var(--text-dim);
+}
+
+.metar-age{
+  font-family:var(--mono);font-size:.52rem;color:var(--text-dim);
+  letter-spacing:.1em;padding:6px 14px 7px 18px;
+  border-top:1px solid var(--border);
+  background:rgba(0,0,0,0.3);
+  font-weight:500;
+}
+
+@media(max-width:1100px){
+  .metar-grid{grid-template-columns:repeat(5,1fr)}
+  .metar-cell:nth-child(5n){border-right:none}
+  .metar-cell:nth-child(-n+5){border-bottom:1px solid var(--border)}
+}
+@media(max-width:600px){
+  .metar-grid{grid-template-columns:repeat(3,1fr)}
+  .metar-cell{border-right:1px solid var(--border)!important;border-bottom:1px solid var(--border)}
+  .metar-cell:nth-child(3n){border-right:none!important}
+}
+
+/* ── TAF CARDS ── */
+.taf-strip{display:flex;flex-direction:column;gap:12px;padding:14px}
+.taf-card{
+  border:1px solid var(--border);border-radius:var(--radius);
+  background:linear-gradient(180deg,rgba(0,0,0,0.5),rgba(8,12,20,0.4));
+  overflow:hidden;position:relative;
+}
+.taf-card::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;
+  width:3px;
+  background:linear-gradient(180deg,var(--accent),var(--cyan));
+  box-shadow:0 0 14px var(--accent);
+}
+.taf-header{
+  display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+  padding:12px 14px 8px 18px;
+}
+.taf-icao{
+  font-family:var(--display);font-size:.95rem;font-weight:700;
+  letter-spacing:.18em;color:var(--accent-bright);
+}
+.taf-airport{
+  font-family:var(--mono);font-size:.55rem;letter-spacing:.12em;color:var(--text-dim);font-weight:500;
+}
+.taf-validity{
+  margin-left:auto;
+  font-family:var(--mono);font-size:.54rem;letter-spacing:.12em;color:var(--text-dim);
+}
+.taf-raw{
+  font-family:var(--mono);font-size:.6rem;color:var(--accent-bright);
+  line-height:1.7;letter-spacing:.04em;word-break:break-all;
+  padding:8px 14px 8px 18px;
+  border-top:1px solid var(--border);
+  background:rgba(0,0,0,0.4);font-weight:500;
+}
+.taf-timeline{
+  display:flex;flex-direction:column;
+  border-top:1px solid var(--border);
+  overflow-x:auto;
+}
+.taf-period{
+  display:grid;
+  grid-template-columns:185px 70px 1fr 70px 1fr 90px;
+  border-bottom:1px solid var(--border);
+  align-items:stretch;
+  min-width:560px;
+  transition:background .15s;
+}
+.taf-period:hover{background:rgba(34,211,238,0.03)}
+.taf-period:last-child{border-bottom:none}
+.taf-cell{
+  padding:8px 12px;
+  border-right:1px solid var(--border);
+  font-family:var(--mono);font-size:.6rem;color:var(--text);
+  display:flex;align-items:center;font-weight:500;
+}
+.taf-cell:last-child{border-right:none}
+.taf-cell.time{color:var(--cyan);font-size:.58rem;white-space:nowrap;font-variant-numeric:tabular-nums}
+.taf-cell.chg{font-size:.52rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim);white-space:nowrap;font-weight:600}
+.taf-cell.wind{color:var(--accent-bright);white-space:nowrap;font-variant-numeric:tabular-nums}
+.taf-cell.wx{color:var(--amber);font-size:.58rem}
+.taf-period.chg-BECMG .taf-cell.chg{color:var(--accent)}
+.taf-period.chg-TEMPO .taf-cell.chg{color:var(--amber)}
+.taf-period.chg-PROB  .taf-cell.chg{color:#ff6b35}
+.taf-period.chg-FM    .taf-cell.chg{color:var(--green)}
+
+.taf-header-row{
+  display:grid;
+  grid-template-columns:185px 70px 1fr 70px 1fr 90px;
+  border-bottom:1px solid var(--border-hi);
+  min-width:560px;
+  background:rgba(0,0,0,0.45);
+}
+.taf-col-hdr{
+  padding:6px 12px;
+  font-family:var(--mono);font-size:.46rem;letter-spacing:.2em;font-weight:600;
+  text-transform:uppercase;color:var(--text-dim);
+  border-right:1px solid var(--border);
+}
+.taf-col-hdr:last-child{border-right:none}
+
+.notam-badge-fresh,.notam-badge-recent,.notam-badge-warn{
+  font-size:.48rem;padding:1px 5px;border-radius:3px;
+  border:1px solid;margin-left:6px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;vertical-align:middle;
+}
+.notam-badge-fresh{color:#4ade80;border-color:#4ade80}
+.notam-badge-recent{color:#fbbf24;border-color:#fbbf24}
+.notam-badge-warn{color:#f87171;border-color:#f87171}
+
+.notam-panel{
+  border:1px solid var(--border);border-radius:var(--radius-lg);
+  background:linear-gradient(180deg,var(--panel),var(--bg2));
+  overflow:hidden;
+  box-shadow:var(--shadow-panel);
+}
+.notam-body{padding:10px 14px 14px}
+.notam-list{
+  display:flex;flex-direction:column;gap:8px;
+  max-height:480px;overflow-y:auto;
+  scrollbar-width:thin;scrollbar-color:var(--border-hi) transparent;
+  padding-right:4px;
+}
+.notam-list::-webkit-scrollbar{width:6px}
+.notam-list::-webkit-scrollbar-track{background:transparent}
+.notam-list::-webkit-scrollbar-thumb{background:var(--border-hi);border-radius:3px}
+
+.notam-item{
+  padding:10px 12px;
+  border:1px solid var(--border);border-radius:var(--radius);
+  background:linear-gradient(180deg,rgba(0,0,0,0.4),rgba(8,12,20,0.3));
+  border-left:3px solid var(--cyan);
+  font-family:var(--mono);font-size:.62rem;line-height:1.7;
+  color:var(--text);word-break:break-word;font-weight:500;
+  transition:all .15s;
+}
+.notam-item:hover{border-color:var(--border-hi);background:rgba(8,12,20,0.6)}
+.notam-item .notam-id{
+  display:block;color:var(--cyan);font-size:.65rem;
+  letter-spacing:.1em;margin-bottom:4px;font-weight:600;
+}
+.notam-item.warn{border-left-color:var(--amber)}
+.notam-item.warn .notam-id{color:var(--amber)}
+
+.notam-tab-header{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 18px 8px;
+  font-family:var(--mono);font-size:.62rem;color:var(--text-dim);
+  font-weight:500;
+}
+.notam-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 8px var(--green);
+  animation:pulseLed 2s ease-in-out infinite;flex-shrink:0;
+}
+.notam-open-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 14px;font-family:var(--mono);font-size:.62rem;
+  letter-spacing:.14em;text-transform:uppercase;font-weight:500;
+  color:var(--cyan);border:1px solid var(--border-hi);
+  border-radius:var(--radius);background:rgba(34,211,238,0.06);
+  text-decoration:none;
+  transition:all .2s;
+  margin-left:auto;
+}
+.notam-open-btn:hover{
+  background:rgba(34,211,238,0.14);
+  border-color:var(--border-bright);
+  box-shadow:0 0 18px var(--cyan-glow);
+}
+
+.notam-filter{display:flex;gap:6px;padding:0 18px 10px;flex-wrap:wrap}
+.notam-filter-btn{
+  padding:4px 12px;
+  font-family:var(--mono);font-size:.55rem;letter-spacing:.14em;font-weight:500;
+  text-transform:uppercase;
+  border:1px solid var(--border-hi);border-radius:3px;
+  background:transparent;color:var(--text-dim);
+  cursor:pointer;
+  user-select:none;
+  transition:all .15s;
+}
+.notam-filter-btn:hover{color:var(--accent-bright);border-color:var(--accent-bright)}
+.notam-filter-btn.active{
+  color:var(--cyan);border-color:var(--cyan);
+  background:rgba(34,211,238,0.08);
+  box-shadow:0 0 12px var(--cyan-glow);
+}
+
+/* ── ATC INLINE PLAYERS ── */
+.atc-players{
+  display:flex;flex-direction:column;gap:10px;padding:14px;
+}
+.atc-player{
+  display:grid;
+  grid-template-columns:auto 1fr auto auto;
+  gap:14px;align-items:center;
+  padding:12px 14px;
+  border:1px solid var(--border);
+  border-left:3px solid var(--cyan);
+  border-radius:var(--radius);
+  background:linear-gradient(180deg,rgba(0,0,0,0.5),rgba(8,12,20,0.4));
+  transition:border-color .2s,box-shadow .2s;
+}
+.atc-player:hover{border-color:var(--border-hi)}
+.atc-player.playing{
+  border-color:var(--border-bright);
+  border-left-color:var(--cyan);
+  box-shadow:0 0 24px -8px var(--cyan-glow);
+  background:linear-gradient(180deg,rgba(34,211,238,0.04),rgba(8,12,20,0.5));
+}
+
+.atc-play-btn{
+  width:44px;height:44px;border-radius:50%;
+  border:1px solid var(--border-hi);
+  background:linear-gradient(180deg,rgba(34,211,238,0.1),rgba(0,0,0,0.4));
+  color:var(--cyan);
+  font-family:var(--display);font-size:.95rem;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s cubic-bezier(.4,0,.2,1);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.06),0 0 0 0 var(--cyan-glow);
+  flex-shrink:0;
+}
+.atc-play-btn:hover{
+  border-color:var(--cyan);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.1),0 0 22px var(--cyan-glow);
+  transform:scale(1.04);
+}
+.atc-play-btn:active{transform:scale(0.97)}
+.atc-play-icon{
+  display:inline-block;
+  text-shadow:0 0 12px var(--cyan);
+  line-height:1;
+  transform:translateX(1px);
+}
+.atc-player.playing .atc-play-icon{transform:translateX(0)}
+.atc-player.loading .atc-play-icon{
+  animation:atcSpin 1s linear infinite;
+  display:inline-block;
+}
+@keyframes atcSpin{to{transform:rotate(360deg)}}
+
+.atc-info{min-width:0}
+.atc-label{
+  font-family:var(--display);font-size:.78rem;font-weight:700;
+  letter-spacing:.14em;color:var(--accent-bright);
+  text-shadow:0 0 14px rgba(155,212,255,0.3);
+  display:flex;align-items:center;gap:8px;
+}
+.atc-flag{font-size:.95rem;line-height:1;letter-spacing:0}
+.atc-freq{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;
+  color:var(--text-dim);font-weight:500;margin-top:3px;
+}
+
+.atc-status{
+  display:flex;align-items:center;gap:7px;
+  font-family:var(--mono);font-size:.55rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--text-dim);font-weight:600;
+  padding:5px 10px;
+  border:1px solid var(--border-hi);border-radius:3px;
+  background:rgba(0,0,0,0.3);
+  min-width:90px;
+}
+.atc-status-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--muted);
+  transition:background .2s,box-shadow .2s;
+}
+.atc-player.loading .atc-status{color:var(--amber);border-color:var(--amber)}
+.atc-player.loading .atc-status-dot{
+  background:var(--amber);
+  box-shadow:0 0 8px var(--amber);
+  animation:pulseLed 1s ease-in-out infinite;
+}
+.atc-player.playing .atc-status{color:var(--green);border-color:var(--green)}
+.atc-player.playing .atc-status-dot{
+  background:var(--green);
+  box-shadow:0 0 10px var(--green);
+  animation:pulseLed 1.6s ease-in-out infinite;
+}
+.atc-player.error .atc-status{color:var(--red);border-color:var(--red)}
+.atc-player.error .atc-status-dot{background:var(--red);box-shadow:0 0 8px var(--red)}
+
+.atc-volume{
+  display:flex;align-items:center;gap:8px;
+}
+.atc-vol-icon{font-size:.85rem;opacity:.65}
+.atc-vol-slider{
+  -webkit-appearance:none;appearance:none;
+  width:100px;height:4px;
+  background:var(--border-hi);border-radius:2px;
+  outline:none;cursor:pointer;
+}
+.atc-vol-slider::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;
+  width:14px;height:14px;border-radius:50%;
+  background:var(--cyan);
+  box-shadow:0 0 10px var(--cyan-glow);
+  cursor:pointer;
+  border:1px solid rgba(0,0,0,0.4);
+}
+.atc-vol-slider::-moz-range-thumb{
+  width:14px;height:14px;border-radius:50%;
+  background:var(--cyan);
+  box-shadow:0 0 10px var(--cyan-glow);
+  cursor:pointer;border:1px solid rgba(0,0,0,0.4);
+}
+
+@media(max-width:700px){
+  .atc-player{
+    grid-template-columns:auto 1fr auto;
+    grid-template-areas:
+      "btn info status"
+      "vol vol vol";
+    gap:10px 12px;
+  }
+  .atc-play-btn{grid-area:btn}
+  .atc-info{grid-area:info}
+  .atc-status{grid-area:status;min-width:0}
+  .atc-volume{grid-area:vol;justify-content:flex-start}
+  .atc-vol-slider{flex:1;width:auto;max-width:200px}
+}
+
+/* ── EMBEDDED RWC IFRAME ── */
+.frame-fallback-link{
+  margin-left:auto;
+  font-family:var(--mono);font-size:.5rem;letter-spacing:.16em;font-weight:500;
+  text-transform:uppercase;color:var(--accent-bright);
+  text-decoration:none;
+  padding:3px 9px;
+  border:1px solid var(--border-hi);border-radius:3px;
+  background:rgba(34,211,238,0.05);
+  transition:all .15s;
+  flex-shrink:0;
+}
+.frame-fallback-link:hover{
+  color:var(--cyan);border-color:var(--cyan);
+  background:rgba(34,211,238,0.12);
+  box-shadow:0 0 12px var(--cyan-glow);
+}
+.rwc-frame-wrap{
+  position:relative;
+  width:100%;
+  height:calc(100vh - 220px);
+  min-height:680px;
+  border:1px solid var(--border-hi);
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+  background:#04060b;
+  box-shadow:
+    inset 0 0 80px rgba(0,0,0,0.7),
+    0 0 0 1px rgba(34,211,238,0.06),
+    0 0 32px -10px var(--cyan-glow),
+    0 20px 40px -20px rgba(0,0,0,0.6);
+}
+.rwc-frame-wrap::before{
+  content:'';position:absolute;inset:0;border-radius:var(--radius-lg);
+  background:
+    linear-gradient(135deg,var(--cyan) 0%,transparent 14px) top left    /14px 14px no-repeat,
+    linear-gradient(225deg,var(--cyan) 0%,transparent 14px) top right   /14px 14px no-repeat,
+    linear-gradient(315deg,var(--cyan) 0%,transparent 14px) bottom right/14px 14px no-repeat,
+    linear-gradient( 45deg,var(--cyan) 0%,transparent 14px) bottom left /14px 14px no-repeat;
+  opacity:.3;pointer-events:none;z-index:5;
+  filter:drop-shadow(0 0 4px var(--cyan));
+}
+.rwc-frame{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  border:0;
+  background:#04060b;
+}
+
+/* ── ACTIVE TAB — multi-layer effect ── */
+.tab-btn.active{
+  color:#fff;
+  background:linear-gradient(180deg,rgba(27,124,255,0.95),rgba(11,90,200,0.95));
+  box-shadow:
+    0 6px 22px rgba(27,124,255,0.4),
+    0 0 0 1px rgba(85,193,255,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.2),
+    inset 0 -1px 0 rgba(0,0,0,0.2);
+  text-shadow:0 0 14px rgba(255,255,255,0.5);
+  transform:translateY(-1px);
+  animation:tabActivePulse 2.8s ease-in-out infinite;
+  position:relative;
+  overflow:hidden;
+}
+body.night .tab-btn.active{
+  background:linear-gradient(180deg,rgba(180,90,0,0.95),rgba(120,55,0,0.95));
+  box-shadow:
+    0 6px 22px rgba(160,80,0,0.45),
+    0 0 0 1px rgba(204,136,0,0.55),
+    inset 0 1px 0 rgba(255,200,100,0.2),
+    inset 0 -1px 0 rgba(0,0,0,0.25);
+  text-shadow:0 0 14px rgba(255,200,100,0.5);
+  animation:tabActivePulseNight 2.8s ease-in-out infinite;
+}
+@keyframes tabActivePulse{
+  0%,100%{box-shadow:0 6px 22px rgba(27,124,255,0.4),0 0 0 1px rgba(85,193,255,0.5),inset 0 1px 0 rgba(255,255,255,0.2),inset 0 -1px 0 rgba(0,0,0,0.2);}
+  50%   {box-shadow:0 8px 30px rgba(27,124,255,0.55),0 0 0 1px rgba(85,193,255,0.7),0 0 24px rgba(85,193,255,0.25),inset 0 1px 0 rgba(255,255,255,0.25),inset 0 -1px 0 rgba(0,0,0,0.2);}
+}
+@keyframes tabActivePulseNight{
+  0%,100%{box-shadow:0 6px 22px rgba(160,80,0,0.45),0 0 0 1px rgba(204,136,0,0.55),inset 0 1px 0 rgba(255,200,100,0.2),inset 0 -1px 0 rgba(0,0,0,0.25);}
+  50%   {box-shadow:0 8px 30px rgba(160,80,0,0.6),0 0 0 1px rgba(204,136,0,0.75),0 0 24px rgba(204,136,0,0.3),inset 0 1px 0 rgba(255,200,100,0.25),inset 0 -1px 0 rgba(0,0,0,0.25);}
+}
+
+/* Active tab — animated underline accent */
+.tab-btn.active::after{
+  content:'';position:absolute;left:14px;right:14px;bottom:5px;height:2px;
+  background:linear-gradient(90deg,transparent,#fff,transparent);
+  border-radius:2px;
+  animation:tabUnderline 2.5s ease-in-out infinite;
+  box-shadow:0 0 8px rgba(255,255,255,0.6);
+  pointer-events:none;
+}
+@keyframes tabUnderline{
+  0%,100%{opacity:0.4;transform:scaleX(0.6);}
+  50%   {opacity:1;  transform:scaleX(1);}
+}
+
+/* Active tab — sweeping shimmer */
+.tab-btn.active::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.25),transparent);
+  transform:translateX(-100%);
+  animation:tabShimmer 3.5s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes tabShimmer{
+  0%      {transform:translateX(-100%);}
+  60%,100%{transform:translateX(100%);}
+}
+
+/* Featured tab keeps its identity when not active */
+.tab-btn.tab-featured:not(.active){
+  color:var(--accent-bright);
+}
+
+@media(max-width:600px){
+  .rwc-frame-wrap{height:calc(100vh - 180px);min-height:540px;}
+}
+
+/* ── SMOOTH CONTENT UPDATES ── */
+#metar-strip,#taf-strip,#island-cards,#forecast-content,#marine-content,#sigmet-content{
+  transition:opacity .25s ease;
+}
+#metar-strip *,#taf-strip *,#island-cards *,#forecast-content *,#marine-content *,#sigmet-content *{
+  transition:color .2s ease, background-color .2s ease;
+}
+
+/* Masks the brief blank during iframe reload */
+.radar-box.iframe-reloading::after{
+  content:'↺  Refreshing…';
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(4,6,11,0.82);
+  color:var(--cyan);
+  font-family:var(--mono);font-size:.75rem;letter-spacing:.18em;
+  z-index:10;
+  animation:reloadingPulse 1.2s ease-in-out infinite;
+}
+@keyframes reloadingPulse{
+  0%,100%{opacity:.7} 50%{opacity:1}
+}
+
+/* ── MANUAL IFRAME REFRESH BUTTON ── */
+.iframe-refresh-btn{
+  position:absolute;top:8px;right:8px;z-index:1100;
+  width:30px;height:30px;border-radius:50%;
+  border:1px solid var(--border-bright);
+  background:rgba(0,0,0,0.7);
+  color:var(--cyan);
+  font-family:var(--display);font-size:1rem;font-weight:700;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;
+  transition:opacity .2s,background .2s,box-shadow .2s,transform .2s;
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+.radar-box:hover .iframe-refresh-btn{opacity:.9}
+.iframe-refresh-btn:hover{
+  opacity:1;
+  background:rgba(34,211,238,0.2);
+  box-shadow:0 0 16px var(--cyan-glow);
+  transform:rotate(45deg) scale(1.05);
+}
+.iframe-refresh-btn.spinning{animation:refreshSpin 1s linear}
+@keyframes refreshSpin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
+/* ── FLIGHTS TOGGLE ── */
+.flights-toggle{
+  display:inline-flex;gap:4px;
+  margin-left:14px;
+  padding:3px;
+  border:1px solid var(--border-hi);border-radius:6px;
+  background:rgba(0,0,0,0.4);
+}
+.flights-toggle-btn{
+  padding:6px 14px;
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;font-weight:600;
+  text-transform:uppercase;color:var(--text-dim);
+  border:1px solid transparent;border-radius:4px;
+  background:transparent;cursor:pointer;
+  transition:all .2s;
+}
+.flights-toggle-btn:hover{color:var(--accent-bright)}
+.flights-toggle-btn.active{
+  color:var(--cyan);
+  border-color:var(--border-bright);
+  background:linear-gradient(180deg,rgba(34,211,238,0.14),rgba(0,0,0,0.3));
+  box-shadow:0 0 14px var(--cyan-glow),inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
+/* ── WEATHER TAB EFFECTS ── */
+/* Animated gradient border on the section title's accent bar */
+#tab-weather .section-title::before{
+  animation:weatherBarPulse 2.4s ease-in-out infinite;
+}
+@keyframes weatherBarPulse{
+  0%,100%{box-shadow:0 0 8px var(--cyan), 0 0 14px var(--cyan-glow)}
+  50%   {box-shadow:0 0 14px var(--cyan), 0 0 24px rgba(34,211,238,0.6)}
+}
+
+/* Subtle conic gradient halo on island cards */
+/* ── ISLAND CARDS (Weather tab) ── */
+#island-cards > div{
+  position:relative;
+  transition:background .3s;
+}
+#island-cards > div:hover{
+  background:linear-gradient(180deg,rgba(34,211,238,0.05),transparent) !important;
+}
+
+/* Live data pulse on temperature value when it just updated */
+@keyframes valueFlash{
+  0%   {color:#fff;text-shadow:0 0 24px rgba(255,255,255,0.7)}
+  100% {color:var(--cyan);text-shadow:0 0 24px rgba(34,211,238,0.55)}
+}
+.value-fresh{animation:valueFlash 1.4s ease-out}
+
+/* ── PANEL TRANSITIONS ── */
+.tab-pane.active{
+  animation:panelEnter .4s cubic-bezier(.16,1,.3,1) both;
+}
+@keyframes panelEnter{
+  from{opacity:0;transform:translateY(8px) scale(0.995);}
+  to  {opacity:1;transform:translateY(0)   scale(1);}
+}
+.tab-pane.leaving{
+  animation:panelLeave .2s ease-in both;
+}
+@keyframes panelLeave{
+  from{opacity:1;transform:translateY(0);}
+  to  {opacity:0;transform:translateY(-6px);}
+}
+
+/* Glowing data badge when LIVE */
+.data-badge:not(.loading):not(.error){
+  background:rgba(74,222,128,0.1);
+  box-shadow:0 0 14px rgba(74,222,128,0.25), inset 0 0 0 1px rgba(74,222,128,0.3);
+}
+
+/* ── INSTALL APP BUTTON ── */
+.install-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 12px;
+  background:linear-gradient(180deg,rgba(34,211,238,0.18),rgba(0,0,0,0.4));
+  border:1px solid var(--border-bright);border-radius:var(--radius);
+  font-family:var(--mono);font-size:.65rem;letter-spacing:.16em;font-weight:600;
+  text-transform:uppercase;color:var(--cyan);
+  cursor:pointer;
+  transition:all .2s;
+  box-shadow:0 0 14px var(--cyan-glow),inset 0 1px 0 rgba(255,255,255,0.06);
+  animation:installPulse 2.5s ease-in-out infinite;
+}
+.install-btn:hover{
+  background:linear-gradient(180deg,rgba(34,211,238,0.3),rgba(0,0,0,0.4));
+  box-shadow:0 0 22px rgba(34,211,238,0.45),inset 0 1px 0 rgba(255,255,255,0.1);
+  transform:translateY(-1px);
+}
+@keyframes installPulse{
+  0%,100%{box-shadow:0 0 14px var(--cyan-glow),inset 0 1px 0 rgba(255,255,255,0.06)}
+  50%   {box-shadow:0 0 22px rgba(34,211,238,0.45),inset 0 1px 0 rgba(255,255,255,0.1)}
+}
+
+/* ── STORM ALERT ── */
+.tab-btn.storm-alert{
+  color:#f87171 !important;
+  border-color:rgba(248,113,113,0.5) !important;
+  background:linear-gradient(180deg,rgba(248,113,113,0.18),rgba(8,12,20,0.6)) !important;
+  box-shadow:
+    0 -2px 0 #f87171 inset,
+    0 0 24px -2px rgba(248,113,113,0.6),
+    0 0 8px rgba(248,113,113,0.4) !important;
+  animation:stormTabPulse 1.5s ease-in-out infinite !important;
+}
+@keyframes stormTabPulse{
+  0%,100%{box-shadow:0 -2px 0 #f87171 inset,0 0 24px -2px rgba(248,113,113,0.5),0 0 8px rgba(248,113,113,0.3) !important}
+  50%   {box-shadow:0 -2px 0 #f87171 inset,0 0 36px 2px rgba(248,113,113,0.85),0 0 14px rgba(248,113,113,0.6) !important}
+}
+
+.storm-banner{
+  grid-column:1/-1;
+  margin-bottom:6px;
+  border:1px solid rgba(248,113,113,0.45);
+  border-radius:var(--radius-lg);
+  background:linear-gradient(180deg,rgba(248,113,113,0.12),rgba(80,12,12,0.7));
+  overflow:hidden;
+  position:relative;
+  box-shadow:
+    0 0 36px -4px rgba(248,113,113,0.4),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+  animation:stormBannerPulse 2s ease-in-out infinite;
+}
+@keyframes stormBannerPulse{
+  0%,100%{box-shadow:0 0 36px -4px rgba(248,113,113,0.4),inset 0 1px 0 rgba(255,255,255,0.05)}
+  50%   {box-shadow:0 0 56px 0 rgba(248,113,113,0.55),inset 0 1px 0 rgba(255,255,255,0.07)}
+}
+.storm-banner-inner{
+  display:flex;align-items:center;gap:16px;
+  padding:14px 18px;
+  position:relative;z-index:1;
+}
+.storm-banner-pulse{
+  position:absolute;left:-30%;top:0;bottom:0;width:30%;
+  background:linear-gradient(90deg,transparent,rgba(248,113,113,0.18),transparent);
+  animation:stormSweep 3.5s linear infinite;
+  pointer-events:none;
+}
+@keyframes stormSweep{
+  to{left:130%}
+}
+.storm-banner-icon{
+  font-size:2rem;line-height:1;
+  filter:drop-shadow(0 0 10px rgba(248,113,113,0.7));
+  animation:stormIconShake .6s ease-in-out infinite;
+}
+@keyframes stormIconShake{
+  0%,100%{transform:rotate(-3deg)}
+  50%   {transform:rotate(3deg)}
+}
+.storm-banner-text{flex:1;min-width:0}
+.storm-banner-hdr{
+  font-family:var(--display);font-size:.85rem;font-weight:800;
+  letter-spacing:.18em;color:#fca5a5;
+  text-shadow:0 0 14px rgba(248,113,113,0.55);
+  margin-bottom:6px;
+}
+.storm-banner-list{
+  display:flex;flex-wrap:wrap;gap:8px;
+}
+.storm-chip{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:5px 10px;
+  border:1px solid rgba(248,113,113,0.4);border-radius:4px;
+  background:rgba(0,0,0,0.4);
+  font-family:var(--mono);font-size:.62rem;color:#fee;
+  font-weight:500;letter-spacing:.06em;
+}
+.storm-chip strong{color:#fff;font-weight:700;letter-spacing:.08em}
+.storm-meta{color:rgba(255,255,255,0.6);font-size:.55rem;letter-spacing:.1em;text-transform:uppercase}
+.storm-banner-link{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;
+  color:#fca5a5;text-transform:uppercase;font-weight:600;
+  padding:6px 12px;
+  border:1px solid rgba(248,113,113,0.45);border-radius:4px;
+  background:rgba(0,0,0,0.5);
+  text-decoration:none;
+  flex-shrink:0;
+  transition:all .2s;
+}
+.storm-banner-link:hover{
+  color:#fff;border-color:#fca5a5;
+  background:rgba(248,113,113,0.18);
+  box-shadow:0 0 16px rgba(248,113,113,0.4);
+}
+
+/* ──────────────────────────────────────────────
+   ISLAND CARDS V2 — rich, animated, mobile-first
+   ────────────────────────────────────────────── */
+.island-card-v2{
+  border-bottom:1px solid var(--border);
+  padding:16px 18px;
+  display:flex;flex-direction:column;gap:14px;
+  position:relative;
+  overflow:hidden;
+  animation:icCardIn .55s cubic-bezier(.4,0,.2,1) both;
+  transition:background .3s, box-shadow .3s;
+}
+.island-card-v2:last-child{border-bottom:none}
+.island-card-v2::before{
+  content:'';position:absolute;left:0;top:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(34,211,238,0.35),transparent);
+  opacity:0;transition:opacity .4s;
+}
+.island-card-v2:hover::before{opacity:1}
+.island-card-v2:hover{
+  background:linear-gradient(180deg,rgba(34,211,238,0.04),transparent);
+}
+.island-card-v2:nth-child(1){animation-delay:0s}
+.island-card-v2:nth-child(2){animation-delay:0.08s}
+.island-card-v2:nth-child(3){animation-delay:0.16s}
+@keyframes icCardIn{
+  from{opacity:0;transform:translateY(14px)}
+  to  {opacity:1;transform:translateY(0)}
+}
+
+/* ── HEADER ── */
+.ic-header{
+  display:grid;
+  grid-template-columns:auto 1fr auto auto auto;
+  gap:14px;
+  align-items:center;
+  padding-bottom:6px;
+  border-bottom:1px dashed var(--border);
+}
+.ic-flag{
+  font-size:1.85rem;line-height:1;
+  filter:drop-shadow(0 0 12px rgba(34,211,238,0.45));
+}
+.ic-name-block{min-width:0}
+.ic-name{
+  font-family:var(--display);font-size:1rem;font-weight:700;
+  letter-spacing:.16em;color:var(--accent-bright);
+  text-shadow:0 0 18px rgba(155,212,255,0.35);
+}
+.ic-sub{
+  font-family:var(--mono);font-size:.5rem;color:var(--text-dim);
+  letter-spacing:.14em;margin-top:3px;font-weight:500;
+}
+.ic-icon-big{
+  width:62px;height:62px;flex-shrink:0;
+}
+.ic-cat{
+  text-align:center;padding:0 4px;
+}
+.ic-cat-val{
+  font-family:var(--display);font-size:.85rem;font-weight:700;
+  letter-spacing:.12em;
+}
+.ic-cat-cond{
+  font-family:var(--mono);font-size:.46rem;color:var(--text-dim);
+  margin-top:4px;font-weight:500;letter-spacing:.06em;
+  max-width:90px;line-height:1.3;
+}
+.ic-temp-block{
+  text-align:right;
+  min-width:0;
+}
+.ic-temp{
+  font-family:var(--display);font-size:2rem;font-weight:700;
+  color:var(--cyan);
+  text-shadow:0 0 28px rgba(34,211,238,0.6);
+  line-height:1;letter-spacing:-.025em;
+  font-variant-numeric:tabular-nums;
+}
+.ic-temp-sub{
+  font-family:var(--mono);font-size:.5rem;color:var(--text-dim);
+  margin-top:5px;font-weight:500;letter-spacing:.08em;
+}
+
+/* ── SECTION SPACING ── */
+.ic-section{padding:0}
+
+/* ── TEMP / FEELS / DEW BAR ── */
+.ic-temp-row{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:10px;align-items:center;
+}
+.ic-temp-low,.ic-temp-high{
+  font-family:var(--mono);font-size:.55rem;font-weight:600;
+  letter-spacing:.1em;
+}
+.ic-temp-low{color:var(--accent)}
+.ic-temp-high{color:#ffaa55;font-family:var(--display);font-size:.85rem;letter-spacing:-.01em}
+.ic-temp-bar{
+  position:relative;height:8px;
+  background:rgba(0,0,0,0.4);
+  border:1px solid rgba(34,211,238,0.12);
+  border-radius:4px;
+}
+.ic-temp-bar-fill{
+  position:absolute;inset:0;
+  background:linear-gradient(90deg,#5ab8ff 0%,#22d3ee 30%,#fbbf24 70%,#ffaa55 100%);
+  border-radius:4px;
+  box-shadow:0 0 12px rgba(255,170,85,0.3),0 0 6px rgba(34,211,238,0.25);
+  animation:icBarShimmer 3s linear infinite;
+}
+@keyframes icBarShimmer{
+  0%,100%{filter:brightness(1)}
+  50%   {filter:brightness(1.18)}
+}
+.ic-marker{
+  position:absolute;top:50%;
+  width:2px;height:14px;
+  transform:translate(-50%,-50%);
+  border-radius:1px;
+}
+.ic-marker-dew{background:#22d3ee;box-shadow:0 0 6px #22d3ee}
+.ic-marker-feels{background:#fbbf24;box-shadow:0 0 8px #fbbf24;width:3px;height:16px}
+.ic-marker-temp{background:#fff;box-shadow:0 0 8px #fff;width:3px;height:18px}
+
+/* ── HUMIDITY / CLOUD BARS ── */
+.ic-bar-row{
+  display:grid;
+  grid-template-columns:auto 1fr auto auto;
+  gap:8px;align-items:center;
+}
+.ic-bar-icon{font-size:.85rem;line-height:1;width:18px;text-align:center}
+.ic-bar-track{
+  height:6px;
+  background:rgba(0,0,0,0.4);
+  border:1px solid rgba(34,211,238,0.1);
+  border-radius:3px;overflow:hidden;
+}
+.ic-bar-fill{
+  height:100%;border-radius:3px;
+  transition:width 1s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 0 8px rgba(34,211,238,0.3);
+}
+.ic-bar-val{
+  font-family:var(--display);font-size:.78rem;font-weight:700;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em;
+  min-width:38px;text-align:right;color:var(--accent-bright);
+}
+.ic-bar-sub{
+  font-family:var(--mono);font-size:.5rem;color:var(--text-dim);
+  letter-spacing:.14em;font-weight:600;text-transform:uppercase;
+  min-width:28px;text-align:right;
+}
+
+/* ── METER ROW (wind compass + UV gauge) ── */
+.ic-meter-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+  padding:10px 0;
+  border-top:1px dashed var(--border);
+  border-bottom:1px dashed var(--border);
+}
+.ic-meter{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:10px;
+  align-items:center;
+  min-width:0;
+}
+.ic-meter > svg{
+  width:64px;height:64px;
+  filter:drop-shadow(0 0 5px rgba(34,211,238,0.2));
+}
+.ic-meter-info{min-width:0}
+.ic-meter-lbl{
+  font-family:var(--mono);font-size:.46rem;letter-spacing:.2em;font-weight:600;
+  text-transform:uppercase;color:var(--text-dim);
+}
+.ic-meter-val{
+  font-family:var(--display);font-size:1rem;font-weight:700;
+  letter-spacing:-.01em;line-height:1.1;margin-top:3px;
+  font-variant-numeric:tabular-nums;
+}
+.ic-meter-unit{font-size:.55rem;color:var(--text-dim);font-weight:500}
+.ic-meter-sub{
+  font-family:var(--mono);font-size:.5rem;color:var(--text-dim);
+  letter-spacing:.08em;font-weight:500;margin-top:3px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.ic-wind-rotor{
+  transform:rotate(var(--wind-deg, 0deg));
+  transform-origin:40px 40px;
+  transition:transform 1.5s cubic-bezier(.4,0,.2,1);
+}
+.ic-uv-gauge path:last-of-type{
+  animation:icUvDraw 1.4s ease-out;
+}
+@keyframes icUvDraw{
+  from{stroke-dasharray:0 100}
+}
+
+/* ── AVIATION STATS STRIP ── */
+.ic-stats{
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:8px;
+}
+.ic-stat{
+  text-align:center;
+  padding:6px 4px;
+  background:rgba(0,0,0,0.25);
+  border:1px solid rgba(34,211,238,0.06);
+  border-radius:4px;
+  min-width:0;
+}
+.ic-stat-lbl{
+  font-family:var(--mono);font-size:.42rem;letter-spacing:.18em;font-weight:600;
+  text-transform:uppercase;color:var(--text-dim);
+}
+.ic-stat-val{
+  font-family:var(--display);font-size:.82rem;font-weight:700;
+  color:var(--accent-bright);margin-top:3px;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em;
+  line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.ic-stat-unit{font-size:.5rem;color:var(--text-dim);font-weight:500}
+.ic-stat-clouds{font-size:.62rem;letter-spacing:.04em}
+
+/* ── RAW METAR ── */
+.ic-raw{
+  font-family:var(--mono);font-size:.6rem;color:var(--cyan);
+  background:rgba(0,0,0,0.45);
+  padding:8px 12px;
+  border-radius:4px;
+  border:1px solid rgba(34,211,238,0.1);
+  word-break:break-all;line-height:1.7;font-weight:500;
+}
+.ic-raw-lbl{
+  font-size:.48rem;color:var(--text-dim);letter-spacing:.18em;font-weight:600;
+  margin-right:8px;
+}
+
+/* ────────────────────────────────────
+   MOBILE LAYOUT — phones (≤600px)
+   ──────────────────────────────────── */
+@media(max-width:900px){
+  .ic-header{
+    grid-template-columns:auto 1fr auto;
+    grid-template-areas:
+      "flag name temp"
+      "icon cat  cat";
+    row-gap:10px;
+  }
+  .ic-flag{grid-area:flag}
+  .ic-name-block{grid-area:name}
+  .ic-icon-big{grid-area:icon;width:54px;height:54px;justify-self:start}
+  .ic-cat{grid-area:cat;text-align:left;padding:0;align-self:center}
+  .ic-cat-cond{max-width:none}
+  .ic-temp-block{grid-area:temp}
+  .ic-temp{font-size:1.85rem}
+  .ic-stats{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:600px){
+  .island-card-v2{padding:14px 12px;gap:12px}
+  .ic-flag{font-size:1.5rem}
+  .ic-name{font-size:.85rem;letter-spacing:.12em}
+  .ic-sub{font-size:.46rem}
+  .ic-temp{font-size:1.65rem}
+  .ic-temp-sub{font-size:.46rem}
+  .ic-icon-big{width:46px;height:46px}
+  .ic-cat-val{font-size:.72rem}
+  .ic-meter-row{gap:10px;padding:8px 0}
+  .ic-meter{gap:8px}
+  .ic-meter > svg{width:54px;height:54px}
+  .ic-meter-val{font-size:.85rem}
+  .ic-stats{gap:5px}
+  .ic-stat{padding:5px 3px}
+  .ic-stat-val{font-size:.7rem}
+  .ic-stat-clouds{font-size:.55rem}
+  .ic-raw{font-size:.55rem;padding:6px 10px}
+  .ic-temp-row{gap:6px}
+  .ic-temp-low{font-size:.5rem}
+  .ic-temp-high{font-size:.78rem}
+}
+@media(max-width:380px){
+  .ic-meter-row{grid-template-columns:1fr;gap:8px}
+}
+
+/* ── NEWS STRIP ── */
+.news-strip{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 16px;
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  background:linear-gradient(180deg,rgba(34,211,238,0.04),rgba(0,0,0,0.3));
+  position:relative;
+  overflow:hidden;
+}
+.news-strip::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:linear-gradient(180deg,var(--cyan),var(--accent));
+  box-shadow:0 0 12px var(--cyan);
+}
+.news-icon{
+  font-size:1.2rem;line-height:1;flex-shrink:0;
+  filter:drop-shadow(0 0 8px rgba(34,211,238,0.4));
+}
+.news-content{
+  flex:1;min-width:0;
+  display:flex;flex-direction:column;gap:5px;
+  font-family:var(--mono);font-size:.65rem;color:var(--text);
+  line-height:1.5;font-weight:500;
+}
+.news-item{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:8px;align-items:baseline;
+  text-decoration:none;color:var(--text);
+  transition:color .15s;
+  min-width:0;
+}
+.news-item:hover{color:var(--cyan)}
+.news-date{
+  font-family:var(--mono);font-size:.5rem;letter-spacing:.16em;font-weight:600;
+  color:var(--text-dim);text-transform:uppercase;
+  flex-shrink:0;
+}
+.news-title{
+  font-family:var(--body);font-size:.7rem;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  font-weight:500;
+}
+.news-src{
+  font-family:var(--mono);font-size:.48rem;letter-spacing:.1em;
+  color:var(--text-dim);text-transform:lowercase;flex-shrink:0;
+}
+
+/* ── DUST ALERT ── */
+.dust-alert{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 18px;
+  border-radius:var(--radius-lg);
+  position:relative;overflow:hidden;
+  animation:dustAlertPulse 2.4s ease-in-out infinite;
+}
+.dust-alert.dust-light{
+  border:1px solid rgba(251,191,36,0.4);
+  background:linear-gradient(180deg,rgba(251,191,36,0.10),rgba(60,40,0,0.55));
+  box-shadow:0 0 28px -6px rgba(251,191,36,0.4);
+}
+.dust-alert.dust-moderate{
+  border:1px solid rgba(251,146,60,0.5);
+  background:linear-gradient(180deg,rgba(251,146,60,0.14),rgba(60,30,0,0.6));
+  box-shadow:0 0 32px -4px rgba(251,146,60,0.5);
+}
+.dust-alert.dust-heavy{
+  border:1px solid rgba(248,113,113,0.55);
+  background:linear-gradient(180deg,rgba(248,113,113,0.14),rgba(60,20,10,0.7));
+  box-shadow:0 0 36px -2px rgba(248,113,113,0.55);
+}
+@keyframes dustAlertPulse{
+  0%,100%{filter:brightness(1)}
+  50%   {filter:brightness(1.12)}
+}
+.dust-alert::before{
+  content:'';position:absolute;left:-30%;top:0;bottom:0;width:30%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.06),transparent);
+  animation:dustSweep 4s linear infinite;
+  pointer-events:none;
+}
+@keyframes dustSweep{ to{left:130%} }
+.dust-alert-icon{
+  font-size:1.8rem;line-height:1;
+  filter:drop-shadow(0 0 8px rgba(251,146,60,0.6));
+}
+.dust-alert-text{flex:1;min-width:0}
+.dust-alert-level{
+  display:inline-block;
+  font-family:var(--display);font-size:.75rem;font-weight:800;
+  letter-spacing:.18em;color:#fde68a;
+  text-shadow:0 0 12px rgba(251,191,36,0.55);
+}
+.dust-alert.dust-moderate .dust-alert-level{color:#fed7aa}
+.dust-alert.dust-heavy    .dust-alert-level{color:#fecaca}
+.dust-alert-body{
+  font-family:var(--body);font-size:.78rem;color:#fff;
+  margin-top:5px;font-weight:500;letter-spacing:.01em;line-height:1.4;
+}
+.dust-alert-advice{
+  font-family:var(--mono);font-size:.6rem;color:rgba(255,255,255,0.65);
+  margin-top:4px;letter-spacing:.04em;line-height:1.5;
+}
+
+/* ── FORECAST WRITTEN SUMMARY ── */
+.fcast-island-hdr{
+  flex-wrap:wrap;
+  align-items:flex-start;
+}
+.fcast-summary{
+  flex-basis:100%;
+  margin-top:8px;
+  padding:10px 12px;
+  border:1px solid rgba(34,211,238,0.12);
+  border-left:3px solid var(--cyan);
+  border-radius:4px;
+  background:rgba(0,0,0,0.3);
+  font-family:var(--body);font-size:.72rem;line-height:1.55;
+  color:var(--text);font-weight:500;
+}
+.fcast-summary strong{
+  color:var(--cyan);font-weight:700;letter-spacing:.04em;
+  text-shadow:0 0 8px rgba(34,211,238,0.3);
+  margin-right:4px;
+}
+
+/* Weather alert banner (used in forecast tab) */
+.wxapi-alert{
+  padding:10px 18px;
+  border-left:3px solid #f87171;
+  background:rgba(248,113,113,0.06);
+}
+.wxapi-alert-item{
+  font-family:var(--mono);font-size:.62rem;color:#fca5a5;line-height:1.6;
+}
+
+/* ── HOURLY FORECAST STRIP ── */
+.hourly-strip-wrap{
+  padding:10px 14px 6px;
+  border-bottom:1px solid var(--border);
+  background:rgba(0,0,0,0.2);
+}
+.hourly-strip-lbl{
+  font-family:var(--mono);font-size:.46rem;letter-spacing:.18em;font-weight:600;
+  text-transform:uppercase;color:var(--text-dim);margin-bottom:6px;
+}
+.hourly-strip{
+  display:flex;gap:4px;
+  overflow-x:auto;
+  padding-bottom:6px;
+  scrollbar-width:thin;
+  scrollbar-color:var(--border) transparent;
+}
+.hourly-strip::-webkit-scrollbar{height:4px}
+.hourly-strip::-webkit-scrollbar-thumb{background:var(--border-hi);border-radius:2px}
+.hourly-cell{
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  min-width:38px;flex-shrink:0;
+  padding:5px 4px;
+  border-radius:6px;
+  background:rgba(0,0,0,0.2);
+  border:1px solid rgba(34,211,238,0.06);
+  transition:background .2s;
+}
+.hourly-cell:hover{background:rgba(34,211,238,0.07)}
+.hourly-now{
+  border-color:rgba(34,211,238,0.4) !important;
+  background:rgba(34,211,238,0.08) !important;
+  box-shadow:0 0 10px rgba(34,211,238,0.15);
+}
+.hourly-time{
+  font-family:var(--mono);font-size:.48rem;color:var(--text-dim);
+  font-weight:600;letter-spacing:.06em;
+}
+.hourly-temp{
+  font-family:var(--display);font-size:.72rem;font-weight:700;
+  color:var(--accent-bright);font-variant-numeric:tabular-nums;
+}
+.hourly-bars{
+  display:flex;gap:2px;align-items:flex-end;
+  height:30px;
+}
+.hourly-bar-rain,.hourly-bar-wind{
+  width:5px;border-radius:2px 2px 0 0;
+  min-height:2px;
+  transition:height .8s cubic-bezier(.4,0,.2,1);
+}
+.hourly-rain{
+  font-family:var(--mono);font-size:.44rem;color:var(--accent);
+  font-weight:600;min-height:10px;
+}
+.hourly-wind{
+  font-family:var(--mono);font-size:.5rem;font-weight:700;
+  font-variant-numeric:tabular-nums;
+}
+
+/* ── MARINE: animated waves + bars ── */
+.marine-island-hdr{
+  flex-wrap:wrap;
+  align-items:center;
+  gap:14px;
+}
+.marine-wave-art{
+  width:120px;height:46px;flex-shrink:0;
+  border-radius:6px;
+  overflow:hidden;
+  background:linear-gradient(180deg,rgba(0,30,60,0.5),rgba(0,16,32,0.8));
+  border:1px solid rgba(34,211,238,0.15);
+  position:relative;
+}
+.wave-svg{width:100%;height:100%;display:block}
+.wave-back, .wave-mid, .wave-front{
+  animation:waveBob 3.5s ease-in-out infinite;
+  transform-origin:center;
+}
+.wave-back  {animation-delay:0s;   animation-duration:4.5s}
+.wave-mid   {animation-delay:.4s;  animation-duration:3.5s}
+.wave-front {animation-delay:.8s;  animation-duration:2.8s}
+@keyframes waveBob{
+  0%,100%{transform:translateX(0)   translateY(0)}
+  25%   {transform:translateX(2px)  translateY(-1px)}
+  50%   {transform:translateX(0)    translateY(0)}
+  75%   {transform:translateX(-2px) translateY(1px)}
+}
+
+.marine-bars{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:14px;
+  padding:14px 18px;
+  border-bottom:1px solid var(--border);
+  background:rgba(0,0,0,0.2);
+}
+.marine-bar{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:10px;
+  align-items:center;
+  min-width:0;
+}
+.marine-bar-icon{
+  font-size:1.3rem;line-height:1;
+  filter:drop-shadow(0 0 6px rgba(34,211,238,0.3));
+}
+.marine-bar-info{min-width:0}
+.marine-bar-row1{
+  display:flex;justify-content:space-between;align-items:baseline;gap:8px;
+  margin-bottom:5px;
+}
+.marine-bar-lbl{
+  font-family:var(--mono);font-size:.5rem;letter-spacing:.18em;font-weight:600;
+  text-transform:uppercase;color:var(--text-dim);
+}
+.marine-bar-val{
+  font-family:var(--display);font-size:.82rem;font-weight:700;
+  color:var(--accent-bright);
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em;
+}
+.marine-bar-track{
+  height:7px;
+  background:rgba(0,0,0,0.5);
+  border:1px solid rgba(34,211,238,0.1);
+  border-radius:4px;overflow:hidden;
+  position:relative;
+}
+.marine-bar-fill{
+  height:100%;border-radius:4px;
+  transition:width 1s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 0 10px rgba(34,211,238,0.4);
+  position:relative;
+}
+.marine-bar-fill.animated::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent);
+  background-size:50% 100%;
+  background-repeat:no-repeat;
+  animation:marineBarSheen 2.4s linear infinite;
+}
+@keyframes marineBarSheen{
+  from{background-position:-50% 0}
+  to  {background-position:150% 0}
+}
+.marine-bar-sub{
+  font-family:var(--mono);font-size:.5rem;color:var(--text-dim);
+  letter-spacing:.08em;font-weight:500;margin-top:5px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+
+.marine-summary-row{margin-bottom:6px}
+.marine-summary-row:last-child{margin-bottom:0}
+
+@media(max-width:900px){
+  .marine-bars{grid-template-columns:1fr;gap:10px;padding:10px 12px}
+  .marine-wave-art{width:100px;height:40px}
+}
+@media(max-width:600px){
+  .marine-grid{grid-template-columns:repeat(2,1fr)}
+  .marine-cell:nth-child(2n){border-right:none}
+  .marine-cell:nth-child(6n){border-right:none}
+  .news-strip{padding:10px 12px;gap:10px}
+  .news-title{font-size:.65rem}
+  .news-item{grid-template-columns:auto 1fr;gap:6px}
+  .news-src{display:none}
+  .dust-alert{padding:11px 12px;gap:10px}
+  .dust-alert-body{font-size:.7rem}
+  .dust-alert-icon{font-size:1.4rem}
+  .fcast-summary{font-size:.66rem;padding:9px 11px}
+}
+
+/* ── 3-DAY FORECAST — animated cards ── */
+.fcast-island{
+  border-bottom:1px solid var(--border);
+  position:relative;
+  overflow:hidden;
+}
+.fcast-island:last-child{border-bottom:none}
+.fcast-island::before{
+  content:'';position:absolute;left:0;top:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(34,211,238,0.3),transparent);
+  opacity:0;transition:opacity .4s;
+}
+.fcast-island:hover::before{opacity:1}
+
+.fcast-island-hdr{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 18px 10px;
+  background:linear-gradient(180deg,rgba(34,211,238,0.06),transparent);
+  border-bottom:1px solid var(--border);
+  position:relative;
+}
+.fcast-flag{
+  font-size:1.7rem;line-height:1;
+  filter:drop-shadow(0 0 10px rgba(34,211,238,0.4));
+}
+.fcast-name{
+  font-family:var(--display);font-size:.95rem;font-weight:700;
+  letter-spacing:.16em;color:var(--accent-bright);
+  text-shadow:0 0 18px rgba(155,212,255,0.35);
+}
+.fcast-sub{
+  font-family:var(--mono);font-size:.52rem;color:var(--text-dim);
+  letter-spacing:.14em;margin-top:2px;font-weight:500;
+}
+.fcast-days{
+  display:grid;grid-template-columns:repeat(3,1fr);
+}
+.fcast-day{
+  padding:12px 12px 10px;
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;gap:9px;
+  position:relative;
+  overflow:hidden;
+  transition:background .3s, transform .3s;
+  animation:fcastDayIn .55s cubic-bezier(.4,0,.2,1) both;
+  animation-delay:var(--day-delay,0s);
+}
+.fcast-day:last-child{border-right:none}
+.fcast-day::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 80% 0%,rgba(34,211,238,0.08),transparent 60%);
+  opacity:0;transition:opacity .4s;
+  pointer-events:none;
+}
+.fcast-day:hover::before{opacity:1}
+.fcast-day:hover{transform:translateY(-2px)}
+@keyframes fcastDayIn{
+  from{opacity:0;transform:translateY(14px)}
+  to  {opacity:1;transform:translateY(0)}
+}
+
+.fcast-day-hdr{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:10px;
+}
+.fcast-day-name{
+  font-family:var(--display);font-size:.78rem;font-weight:700;
+  letter-spacing:.1em;color:var(--cyan);
+  text-shadow:0 0 12px rgba(34,211,238,0.35);
+}
+.fcast-day-date{
+  font-family:var(--mono);font-size:.5rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--text-dim);font-weight:600;
+  margin-top:2px;
+}
+.fcast-icon-big{
+  width:50px;height:50px;flex-shrink:0;
+  position:relative;
+}
+
+/* ── ANIMATED WEATHER SVGs ── */
+.wx-svg{width:100%;height:100%;display:block;overflow:visible}
+
+.wx-sun-rays{
+  transform-origin:40px 40px;
+  animation:wxSunSpin 20s linear infinite;
+}
+@keyframes wxSunSpin{to{transform:rotate(360deg)}}
+.wx-sun circle:nth-of-type(1){animation:wxSunPulse 3s ease-in-out infinite}
+@keyframes wxSunPulse{
+  0%,100%{opacity:.85;transform-origin:40px 40px;transform:scale(1)}
+  50%   {opacity:1;transform:scale(1.08)}
+}
+
+.wx-sun-rays-small{transform-origin:28px 28px;animation:wxSunSpin 20s linear infinite}
+
+.wx-cloud-drift{animation:wxCloudDrift 4s ease-in-out infinite}
+.wx-cloud-float{animation:wxCloudFloat 3.5s ease-in-out infinite}
+@keyframes wxCloudDrift{
+  0%,100%{transform:translateX(0)}
+  50%   {transform:translateX(2px)}
+}
+@keyframes wxCloudFloat{
+  0%,100%{transform:translateY(0)}
+  50%   {transform:translateY(-2px)}
+}
+
+.wx-drop{
+  animation:wxDropFall 1.4s linear infinite;
+  opacity:0;
+}
+.wx-drop-1{animation-delay:0s}
+.wx-drop-2{animation-delay:.28s}
+.wx-drop-3{animation-delay:.56s}
+.wx-drop-4{animation-delay:.84s}
+.wx-drop-5{animation-delay:.42s}
+@keyframes wxDropFall{
+  0%   {opacity:0;transform:translateY(-8px)}
+  20%  {opacity:1}
+  80%  {opacity:1}
+  100% {opacity:0;transform:translateY(8px)}
+}
+
+.wx-bolt{
+  transform-origin:42px 56px;
+  animation:wxBoltFlash 2.6s ease-in-out infinite;
+}
+@keyframes wxBoltFlash{
+  0%,40%,100%{opacity:0;transform:scale(0.8)}
+  45%        {opacity:1;transform:scale(1.1);filter:drop-shadow(0 0 8px #fbbf24)}
+  55%        {opacity:.6}
+  60%        {opacity:1;transform:scale(1)}
+}
+
+.wx-fog-line{animation:wxFogSlide 4s ease-in-out infinite}
+.wx-fog-1{animation-delay:0s}
+.wx-fog-2{animation-delay:.7s}
+.wx-fog-3{animation-delay:1.4s}
+@keyframes wxFogSlide{
+  0%,100%{transform:translateX(-3px);opacity:.7}
+  50%   {transform:translateX(3px);opacity:1}
+}
+
+/* ── CONDITION TEXT ── */
+.fcast-cond-row{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+}
+.fcast-cond-text{
+  font-family:var(--mono);font-size:.62rem;color:var(--accent-bright);
+  letter-spacing:.06em;font-weight:500;
+}
+.fcast-aqi-badge{
+  font-family:var(--mono);font-size:.48rem;letter-spacing:.12em;font-weight:700;
+  text-transform:uppercase;
+  padding:2px 6px;border:1px solid;border-radius:3px;
+  white-space:nowrap;
+}
+
+/* ── TEMPERATURE BAR ── */
+.fcast-temp-section{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:10px;
+  align-items:center;
+}
+.fcast-temp-lo-val,.fcast-temp-hi-val{
+  font-family:var(--display);font-weight:700;
+  font-variant-numeric:tabular-nums;
+  letter-spacing:-.02em;
+}
+.fcast-temp-lo-val{
+  font-size:.85rem;color:var(--accent);
+  text-shadow:0 0 10px rgba(90,184,255,0.3);
+}
+.fcast-temp-hi-val{
+  font-size:1.2rem;color:#ffaa55;
+  text-shadow:0 0 14px rgba(255,170,85,0.4);
+}
+.fcast-temp-bar{
+  position:relative;height:8px;
+  background:rgba(0,0,0,0.4);
+  border:1px solid rgba(34,211,238,0.12);
+  border-radius:4px;
+  overflow:visible;
+}
+.fcast-temp-bar-fill{
+  position:absolute;top:0;bottom:0;
+  background:linear-gradient(90deg,#5ab8ff 0%,#22d3ee 30%,#fbbf24 70%,#ffaa55 100%);
+  border-radius:4px;
+  box-shadow:
+    0 0 12px rgba(255,170,85,0.4),
+    0 0 6px rgba(34,211,238,0.3);
+  animation:tempBarShimmer 3s linear infinite;
+}
+@keyframes tempBarShimmer{
+  0%,100%{filter:brightness(1)}
+  50%   {filter:brightness(1.18)}
+}
+.fcast-temp-marker{
+  position:absolute;top:50%;
+  width:2px;height:14px;
+  transform:translate(-50%,-50%);
+  background:#fff;
+  box-shadow:0 0 6px rgba(255,255,255,0.7);
+  border-radius:1px;
+}
+.fcast-temp-marker-lo{background:var(--accent);box-shadow:0 0 6px var(--accent)}
+.fcast-temp-marker-hi{background:#ffaa55;box-shadow:0 0 8px #ffaa55}
+
+/* ── PROGRESS BARS (rain) ── */
+.fcast-bar-row{
+  display:grid;
+  grid-template-columns:auto 1fr auto auto;
+  gap:8px;align-items:center;
+}
+.fcast-bar-icon{font-size:.85rem;line-height:1}
+.fcast-bar-track{
+  height:6px;
+  background:rgba(0,0,0,0.4);
+  border:1px solid rgba(34,211,238,0.1);
+  border-radius:3px;
+  overflow:hidden;
+  position:relative;
+}
+.fcast-bar-fill{
+  height:100%;
+  border-radius:3px;
+  transition:width 1s cubic-bezier(.4,0,.2,1);
+  position:relative;
+  box-shadow:0 0 8px rgba(34,211,238,0.3);
+}
+.fcast-bar-fill.animated::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent);
+  background-size:50% 100%;
+  background-repeat:no-repeat;
+  animation:barShimmer 2s linear infinite;
+}
+@keyframes barShimmer{
+  from{background-position:-50% 0}
+  to  {background-position:150% 0}
+}
+.fcast-bar-val{
+  font-family:var(--display);font-size:.78rem;font-weight:700;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em;
+  min-width:34px;text-align:right;
+}
+.fcast-bar-sub{
+  font-family:var(--mono);font-size:.52rem;color:var(--text-dim);
+  letter-spacing:.08em;font-weight:500;
+  min-width:46px;text-align:right;
+}
+
+/* ── METER ROW (wind compass + UV gauge) ── */
+.fcast-meter-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  padding-top:6px;
+  border-top:1px dashed var(--border);
+}
+.fcast-meter{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  grid-template-rows:auto auto auto;
+  gap:1px 8px;
+  align-items:center;
+}
+.fcast-meter > svg{
+  grid-row:1/4;
+  width:46px;height:46px;
+}
+.fcast-meter-lbl{
+  font-family:var(--mono);font-size:.46rem;letter-spacing:.18em;font-weight:600;
+  text-transform:uppercase;color:var(--text-dim);
+}
+.fcast-meter-val{
+  font-family:var(--display);font-size:.75rem;font-weight:700;
+  letter-spacing:-.01em;line-height:1;
+  font-variant-numeric:tabular-nums;
+}
+.fcast-meter-sub{
+  font-family:var(--mono);font-size:.5rem;color:var(--text-dim);
+  letter-spacing:.1em;font-weight:500;
+}
+.fcast-wind-rotor{
+  transform:rotate(var(--arrow-deg, 0deg));
+  transform-origin:35px 35px;
+  transition:transform 1.5s cubic-bezier(.4,0,.2,1);
+}
+.fcast-wind-compass,.fcast-uv-gauge{
+  filter:drop-shadow(0 0 4px rgba(34,211,238,0.2));
+}
+.fcast-uv-gauge path:last-of-type{
+  animation:uvDraw 1.4s ease-out;
+}
+@keyframes uvDraw{
+  from{stroke-dasharray:0 100}
+}
+
+/* ── SUN ARC ── */
+.fcast-sun-row{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:8px;
+  align-items:center;
+  padding-top:4px;
+}
+.fcast-sun-time{
+  font-family:var(--mono);font-size:.55rem;
+  color:#fbbf24;letter-spacing:.1em;font-weight:600;
+  text-shadow:0 0 6px rgba(251,191,36,0.4);
+}
+.fcast-sun-arc{
+  width:100%;height:24px;display:block;
+}
+.fcast-sun-arc circle{
+  filter:drop-shadow(0 0 4px #fbbf24);
+}
+.fcast-sun-len{
+  font-family:var(--mono);font-size:.5rem;color:var(--text-dim);
+  letter-spacing:.14em;font-weight:500;text-align:center;
+  margin-top:-2px;
+}
+
+@media(max-width:900px){
+  .fcast-days{grid-template-columns:1fr}
+  .fcast-day{border-right:none;border-bottom:1px solid var(--border)}
+  .fcast-day:last-child{border-bottom:none}
+}
+@media(max-width:600px){
+  .fcast-icon-big{width:54px;height:54px}
+  .fcast-meter > svg{width:48px;height:48px}
+  .fcast-temp-hi-val{font-size:1.25rem}
+}
+
+/* ── MARINE ── */
+.marine-island{
+  border-bottom:1px solid var(--border);
+}
+.marine-island:last-child{border-bottom:none}
+.marine-island-hdr{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 18px;
+  background:linear-gradient(180deg,rgba(34,211,238,0.04),transparent);
+  border-bottom:1px solid var(--border);
+}
+.marine-advice{
+  margin-left:auto;
+  display:inline-flex;align-items:center;gap:8px;
+  padding:6px 14px;border-radius:4px;
+  border:1px solid currentColor;
+  font-family:var(--display);font-size:.7rem;font-weight:700;
+  letter-spacing:.12em;
+}
+.marine-advice .marine-icon{font-size:1.05rem;line-height:1}
+.marine-advice.adv-good   {color:#4ade80;background:rgba(74,222,128,0.06);box-shadow:0 0 14px rgba(74,222,128,0.18)}
+.marine-advice.adv-fair   {color:#fbbf24;background:rgba(251,191,36,0.06);box-shadow:0 0 14px rgba(251,191,36,0.18)}
+.marine-advice.adv-rough  {color:#fb923c;background:rgba(251,146,60,0.07);box-shadow:0 0 14px rgba(251,146,60,0.2)}
+.marine-advice.adv-danger {color:#f87171;background:rgba(248,113,113,0.07);box-shadow:0 0 14px rgba(248,113,113,0.22)}
+.marine-grid{
+  display:grid;grid-template-columns:repeat(6,1fr);
+}
+.marine-cell{
+  padding:10px 12px 10px 16px;
+  border-right:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+.marine-cell:nth-child(6n){border-right:none}
+.marine-cell-lbl{
+  font-family:var(--mono);font-size:.46rem;letter-spacing:.2em;font-weight:600;
+  text-transform:uppercase;color:var(--text-dim);margin-bottom:4px;
+}
+.marine-cell-val{
+  font-family:var(--display);font-size:.95rem;font-weight:600;
+  color:var(--accent-bright);line-height:1;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em;
+}
+.marine-cell-sub{
+  font-family:var(--mono);font-size:.46rem;color:var(--text-dim);
+  margin-top:3px;font-weight:500;
+}
+.marine-summary{
+  padding:12px 18px;
+  font-family:var(--body);font-size:.7rem;line-height:1.6;
+  color:var(--text);border-top:1px solid var(--border);
+  background:rgba(0,0,0,0.25);
+  font-weight:500;
+}
+.marine-summary .lbl{
+  font-family:var(--mono);font-size:.5rem;letter-spacing:.18em;
+  color:var(--text-dim);text-transform:uppercase;font-weight:600;
+  margin-right:8px;
+}
+
+/* ── SIGMETs ── */
+.sigmet-list{display:flex;flex-direction:column;gap:8px}
+.sigmet-item{
+  padding:10px 14px;
+  border:1px solid var(--border);
+  border-left:3px solid #fb923c;
+  border-radius:var(--radius);
+  background:linear-gradient(180deg,rgba(251,146,60,0.04),rgba(0,0,0,0.3));
+  font-family:var(--mono);font-size:.62rem;line-height:1.7;
+  color:var(--text);font-weight:500;
+}
+.sigmet-item .sig-id{
+  display:block;color:#fb923c;font-size:.66rem;
+  letter-spacing:.1em;margin-bottom:3px;font-weight:700;
+}
+.sigmet-empty{
+  padding:18px;text-align:center;
+  font-family:var(--mono);font-size:.65rem;color:var(--green);
+  border:1px dashed var(--green);border-radius:var(--radius);
+  background:rgba(74,222,128,0.04);
+}
+
+/* ── ENTRY ANIMATIONS ── */
+.layout > *{animation:fadeUp .5s cubic-bezier(.4,0,.2,1) both}
+.layout > *:nth-child(1){animation-delay:.04s}
+.layout > *:nth-child(2){animation-delay:.10s}
+.layout > *:nth-child(3){animation-delay:.16s}
+.layout > *:nth-child(4){animation-delay:.22s}
+.layout > *:nth-child(5){animation-delay:.28s}
+.layout > *:nth-child(6){animation-delay:.34s}
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(14px)}
+  to  {opacity:1;transform:translateY(0)}
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1100px){
+  .tab-btn{padding:10px 12px;font-size:.62rem;letter-spacing:.14em}
+}
+@media(max-width:900px){
+  .col-6{grid-column:1/-1}
+  .header-title{font-size:.62rem;letter-spacing:.18em}
+  .header-title::before,.header-title::after{display:none}
+  .taf-period,.taf-header-row{grid-template-columns:160px 60px 1fr 60px 1fr 80px}
+  .tab-btn{padding:9px 10px;font-size:.58rem;letter-spacing:.12em;gap:6px;min-width:72px}
+}
+@media(max-width:600px){
+  .layout{padding:10px 10px 28px;gap:10px}
+  .header-title{display:none}
+  .clock-block{padding:5px 9px}
+  .clock-time{font-size:.85rem}
+  .clock-label{font-size:.44rem}
+  .radar-box{height:260px}
+  .metar-decoded{grid-template-columns:repeat(2,1fr)}
+  .tab-bar{padding:6px 8px;gap:4px;margin:0 6px;border-radius:0 0 12px 12px}
+  .tab-btn{padding:8px 8px;font-size:.55rem;letter-spacing:.1em;gap:4px;min-width:60px;border-radius:8px}
+  .tab-key{display:none}
+  .btn{padding:6px 11px;font-size:.65rem}
+}
+</style>
+</head>
+
+<body data-locked="true">
+
+<div class="scanline"></div>
+<div class="refresh-bar"><div class="refresh-progress" id="refreshProgress"></div></div>
+
+<!-- HEADER -->
+<header>
+  <div class="clock-display">
+    <div class="clock-block">
+      <span class="clock-time" id="clockLocal">--:--:--</span>
+      <span class="clock-label">Local · AST</span>
+    </div>
+    <div class="clock-block">
+      <span class="clock-time" id="clockUtc">--:--:--</span>
+      <span class="clock-label">UTC · Zulu</span>
+    </div>
+  </div>
+  <span class="header-title">ATC &amp; Weather Dashboard</span>
+  <div class="header-actions">
+    <div class="night-btn" id="nightToggle">🌙 Night</div>
+    <div class="toggle-container" id="lockToggle">
+      <span class="lock-led" id="lockLed"></span>
+      <span id="lockIcon">🔒</span>
+      <span>Lock</span>
+    </div>
+  </div>
+</header>
+
+<!-- TAB BAR -->
+<div class="tab-bar">
+  <div class="tab-btn active" data-tab="atc">📡 ATC <span class="tab-key">1</span></div>
+  <div class="tab-btn" data-tab="weather">🌤 Weather <span class="tab-key">2</span></div>
+  <div class="tab-btn" data-tab="forecast">📅 Forecast <span class="tab-key">3</span></div>
+  <div class="tab-btn" data-tab="marine">🌊 Marine <span class="tab-key">4</span></div>
+  <div class="tab-btn" data-tab="notams">📋 NOTAMs <span class="tab-key">5</span></div>
+  <div class="tab-btn" data-tab="regional">🌍 Regional <span class="tab-key">6</span></div>
+  <div class="tab-btn" data-tab="satellite">🛰 Sat <span class="tab-key">7</span></div>
+  <div class="tab-btn" data-tab="flights">✈ Flights <span class="tab-key">8</span></div>
+</div>
+
+<!-- ═══ TAB: ATC ═══ -->
+<div class="tab-pane active" id="tab-atc">
+<div class="layout">
+
+  <div class="full">
+    <div class="section-title">Live ATC — Curaçao · Aruba · Bonaire</div>
+    <div class="panel">
+      <div class="atc-players">
+
+        <div class="atc-player" data-stream="https://d.liveatc.net/tncc3_twr">
+          <button class="atc-play-btn" aria-label="Play TNCC TWR"><span class="atc-play-icon">▶</span></button>
+          <div class="atc-info">
+            <div class="atc-label"><span class="atc-flag">🇨🇼</span> TNCC · Hato Tower</div>
+            <div class="atc-freq">118.300 MHz · Curaçao</div>
+          </div>
+          <div class="atc-status">
+            <span class="atc-status-dot"></span>
+            <span class="atc-status-text">Idle</span>
+          </div>
+          <div class="atc-volume">
+            <span class="atc-vol-icon">🔊</span>
+            <input type="range" min="0" max="100" value="80" class="atc-vol-slider"/>
+          </div>
+        </div>
+
+        <div class="atc-player" data-stream="https://d.liveatc.net/tncc3_rdr1">
+          <button class="atc-play-btn" aria-label="Play TNCC APP"><span class="atc-play-icon">▶</span></button>
+          <div class="atc-info">
+            <div class="atc-label"><span class="atc-flag">🇨🇼</span> TNCC · Hato Approach / Radar</div>
+            <div class="atc-freq">APP / RDR · Curaçao</div>
+          </div>
+          <div class="atc-status">
+            <span class="atc-status-dot"></span>
+            <span class="atc-status-text">Idle</span>
+          </div>
+          <div class="atc-volume">
+            <span class="atc-vol-icon">🔊</span>
+            <input type="range" min="0" max="100" value="80" class="atc-vol-slider"/>
+          </div>
+        </div>
+
+        <div class="atc-player" data-stream="https://d.liveatc.net/tnca">
+          <button class="atc-play-btn" aria-label="Play TNCA TWR"><span class="atc-play-icon">▶</span></button>
+          <div class="atc-info">
+            <div class="atc-label"><span class="atc-flag">🇦🇼</span> TNCA · Aruba Tower</div>
+            <div class="atc-freq">118.000 MHz · Queen Beatrix</div>
+          </div>
+          <div class="atc-status">
+            <span class="atc-status-dot"></span>
+            <span class="atc-status-text">Idle</span>
+          </div>
+          <div class="atc-volume">
+            <span class="atc-vol-icon">🔊</span>
+            <input type="range" min="0" max="100" value="80" class="atc-vol-slider"/>
+          </div>
+        </div>
+
+        <div class="atc-player" data-stream="https://d.liveatc.net/tncb">
+          <button class="atc-play-btn" aria-label="Play TNCB TWR"><span class="atc-play-icon">▶</span></button>
+          <div class="atc-info">
+            <div class="atc-label"><span class="atc-flag">🇧🇶</span> TNCB · Bonaire Tower</div>
+            <div class="atc-freq">118.700 MHz · Flamingo</div>
+          </div>
+          <div class="atc-status">
+            <span class="atc-status-dot"></span>
+            <span class="atc-status-text">Idle</span>
+          </div>
+          <div class="atc-volume">
+            <span class="atc-vol-icon">🔊</span>
+            <input type="range" min="0" max="100" value="80" class="atc-vol-slider"/>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="full">
+    <div class="section-title">Live Flight Traffic — airplanes.live (ADS-B)</div>
+    <div class="radar-box adsb-box" style="height:580px">
+      <iframe
+        id="adsbFrame"
+        class="windy-iframe"
+        src="https://globe.airplanes.live/?lat=12.2&lon=-68.5&zoom=9&hideSidebar&hideButtons"
+        data-no-stale="1"
+        allow="fullscreen"
+        referrerpolicy="no-referrer-when-downgrade"
+        title="Live ADS-B traffic"
+        style="width:100%;height:100%;border:none;display:block"
+      ></iframe>
+    </div>
+  </div>
+
+  <div class="col-6">
+    <div class="section-title">Windy — Cloud Cover</div>
+    <div class="radar-box">
+      <iframe class="windy-iframe" src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=clouds"></iframe>
+      <div class="overlay-blocker"></div>
+    </div>
+  </div>
+
+  <div class="col-6">
+    <div class="section-title">Windy — Precipitation Radar</div>
+    <div class="radar-box">
+      <iframe class="windy-iframe" src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=radar"></iframe>
+      <div class="overlay-blocker"></div>
+    </div>
+  </div>
+
+  <div class="full">
+    <div class="section-title">METAR — TNCA · TNCC · TNCB <span class="data-badge loading" id="metarBadge">LOADING</span></div>
+    <div class="panel">
+      <div class="metar-strip">
+        <div class="metar-card">
+          <div class="metar-header">
+            <span class="metar-icao">TNCA</span>
+            <span class="metar-airport">Queen Beatrix Int'l · Aruba 🇦🇼</span>
+            <span id="metar-cat-tnca"></span>
+          </div>
+          <div class="metar-raw" id="metar-raw-tnca">Fetching…</div>
+          <div id="metar-dec-tnca"></div>
+          <div class="metar-age" id="metar-age-tnca"></div>
+        </div>
+        <div class="metar-card">
+          <div class="metar-header">
+            <span class="metar-icao">TNCC</span>
+            <span class="metar-airport">Hato International · Curaçao 🇨🇼</span>
+            <span id="metar-cat-tncc"></span>
+          </div>
+          <div class="metar-raw" id="metar-raw-tncc">Fetching…</div>
+          <div id="metar-dec-tncc"></div>
+          <div class="metar-age" id="metar-age-tncc"></div>
+        </div>
+        <div class="metar-card">
+          <div class="metar-header">
+            <span class="metar-icao">TNCB</span>
+            <span class="metar-airport">Flamingo Airport · Bonaire 🇧🇶</span>
+            <span id="metar-cat-tncb"></span>
+          </div>
+          <div class="metar-raw" id="metar-raw-tncb">Fetching…</div>
+          <div id="metar-dec-tncb"></div>
+          <div class="metar-age" id="metar-age-tncb"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="full">
+    <div class="section-title">TAF — Terminal Aerodrome Forecast <span class="data-badge loading" id="tafBadge">LOADING</span></div>
+    <div class="panel">
+      <div class="taf-strip" id="taf-strip">
+        <div style="padding:16px 14px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim)">Fetching TAF…</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ═══ TAB: WEATHER ═══ -->
+<div class="tab-pane" id="tab-weather">
+<div class="layout">
+
+  <div class="full">
+    <div class="section-title">Current Conditions — ABC Islands <span class="data-badge loading" id="islandBadge">LOADING</span></div>
+    <div class="panel" style="overflow:visible">
+      <div id="island-cards">
+        <div style="padding:24px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center">Loading island weather…</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-6">
+    <div class="section-title">Radar</div>
+    <div class="radar-box">
+      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=radar"></iframe>
+      <div class="overlay-blocker"></div>
+    </div>
+  </div>
+  <div class="col-6">
+    <div class="section-title">Cloud Cover</div>
+    <div class="radar-box">
+      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=clouds"></iframe>
+      <div class="overlay-blocker"></div>
+    </div>
+  </div>
+  <div class="col-6">
+    <div class="section-title">Satellite IR</div>
+    <div class="radar-box">
+      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=satellite"></iframe>
+      <div class="overlay-blocker"></div>
+    </div>
+  </div>
+  <div class="col-6">
+    <div class="section-title">Wind</div>
+    <div class="radar-box">
+      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=wind"></iframe>
+      <div class="overlay-blocker"></div>
+    </div>
+  </div>
+  <div class="col-6">
+    <div class="section-title">Saharan Dust</div>
+    <div class="radar-box">
+      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=11.974&lon=-69.130&zoom=8&overlay=dustsm"></iframe>
+      <div class="overlay-blocker"></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ═══ TAB: NOTAMs ═══ -->
+<div class="tab-pane" id="tab-notams">
+<div class="layout">
+  <div class="full">
+    <div class="section-title">NOTAMs — TNCA · TNCC · TNCB — Live · AWC <span class="data-badge loading" id="notamBadge">LOADING</span></div>
+    <div class="notam-panel">
+      <div class="notam-tab-header">
+        <span class="notam-dot"></span>
+        <span id="notamStatusText">Fetching live NOTAMs…</span>
+        <a class="notam-open-btn" href="https://aviationweather.gov/notam/retrieve?icaos=TNCA,TNCC,TNCB" target="_blank">🔗 AWC NOTAM ↗</a>
+      </div>
+      <div class="notam-filter" id="notamFilter">
+        <button class="notam-filter-btn active" data-filter="ALL">All</button>
+        <button class="notam-filter-btn" data-filter="FRESH">🟢 Fresh</button>
+        <button class="notam-filter-btn" data-filter="RECENT">🟡 Recent</button>
+        <button class="notam-filter-btn" data-filter="AGING">⬜ Aging</button>
+        <button class="notam-filter-btn" data-filter="WARN">⚠ Warnings</button>
+      </div>
+      <div class="notam-body">
+        <div class="notam-list" id="notamList"><div style="padding:20px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center">Fetching live NOTAMs from AWC…</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══ TAB: 3-DAY FORECAST ═══ -->
+<div class="tab-pane" id="tab-forecast">
+<div class="layout">
+
+  <!-- News strip (Caribbean weather/aviation) -->
+  <div class="full" id="newsStripWrap">
+    <div class="news-strip" id="newsStrip">
+      <div class="news-icon">📰</div>
+      <div class="news-content" id="newsContent">Loading Caribbean weather news…</div>
+    </div>
+  </div>
+
+  <!-- Dust alert banner (only shows if dust present/incoming) -->
+  <div class="full" id="dustAlertWrap" style="display:none">
+    <div class="dust-alert" id="dustAlert"></div>
+  </div>
+
+  <div class="full">
+    <div class="section-title">3-Day Forecast — ABC Islands · WeatherAPI <span class="data-badge loading" id="fcastBadge">LOADING</span> <span id="fcastUpdated" style="font-family:var(--mono);font-size:.5rem;color:var(--text-dim);font-weight:500;letter-spacing:.1em;margin-left:8px"></span></div>
+    <div class="panel" style="overflow:visible">
+      <div id="forecast-content">
+        <div style="padding:24px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center">Loading 3-day forecast…</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══ TAB: MARINE ═══ -->
+<div class="tab-pane" id="tab-marine">
+<div class="layout">
+  <div class="full">
+    <div class="section-title">Marine Conditions — ABC Islands <span class="data-badge loading" id="marineBadge">LOADING</span></div>
+    <div class="panel" style="overflow:visible">
+      <div id="marine-content">
+        <div style="padding:24px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center">Loading marine forecast…</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-6">
+    <div class="section-title">Windy — Wave Height</div>
+    <div class="radar-box">
+      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=waves" loading="lazy"></iframe>
+      <div class="overlay-blocker"></div>
+    </div>
+  </div>
+
+  <div class="col-6">
+    <div class="section-title">Windy — Swell Period</div>
+    <div class="radar-box">
+      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=swell1" loading="lazy"></iframe>
+      <div class="overlay-blocker"></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══ TAB: REGIONAL (RWC) ═══ -->
+<div class="tab-pane" id="tab-regional">
+<div class="layout">
+  <div class="full">
+    <div class="section-title">Regional Weather Centre — RWC <span class="data-badge" id="rwcBadge">EMBEDDED</span></div>
+    <div class="rwc-frame-wrap">
+      <iframe id="rwcFrame" class="rwc-frame" title="Regional Weather Centre" loading="lazy"></iframe>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══ TAB: SATELLITE ═══ -->
+<div class="tab-pane" id="tab-satellite">
+<div class="layout">
+  <div class="full">
+    <div class="section-title">Satellite — GOES-E IR · Caribbean</div>
+    <div class="rwc-frame-wrap">
+      <iframe id="satFrame" class="rwc-frame" title="Satellite" loading="lazy"></iframe>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══ TAB: FLIGHTS (Dep + Arr toggle) ═══ -->
+<div class="tab-pane" id="tab-flights">
+<div class="layout">
+  <div class="full">
+    <div class="section-title">Flights — Curaçao International (TNCC)
+      <div class="flights-toggle">
+        <button class="flights-toggle-btn active" data-flights="departures">🛫 Departures</button>
+        <button class="flights-toggle-btn" data-flights="arrivals">🛬 Arrivals</button>
+      </div>
+      <a href="https://curacao-airport.com/flights/?type=departures" target="_blank" class="frame-fallback-link">Open in new tab ↗</a>
+    </div>
+    <div class="rwc-frame-wrap">
+      <iframe id="depFrame" class="rwc-frame flights-frame active" data-mode="departures" title="Departures" loading="lazy"></iframe>
+      <iframe id="arrFrame" class="rwc-frame flights-frame" data-mode="arrivals" title="Arrivals" loading="lazy" style="display:none"></iframe>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+/* ════════════════════════════════
+   CONFIG
+════════════════════════════════ */
+// Direct API keys — move these to a Cloudflare Worker proxy once you
+// have it deployed (see atc-proxy.js) to hide them from view-source.
+const CHECKWX_KEY    = 'fb135a94c0574db4b26082b70705b4af';
+const WX_API_KEY     = 'fef2a58ed5fa4b2ea08221244260405';
+const PROXY_BASE     = '';
+const REFRESH_MS     = 5 * 60 * 1000;
+
+const AIRPORTS = {
+  TNCA:{ label:"Queen Beatrix Int'l · Aruba 🇦🇼",  name:'Aruba',   flag:'🇦🇼', q:'iata:AUA', lat:12.501, lon:-70.015 },
+  TNCC:{ label:'Hato International · Curaçao 🇨🇼',  name:'Curaçao', flag:'🇨🇼', q:'iata:CUR', lat:12.189, lon:-68.960 },
+  TNCB:{ label:'Flamingo Airport · Bonaire 🇧🇶',    name:'Bonaire', flag:'🇧🇶', q:'iata:BON', lat:12.131, lon:-68.268 },
+};
+const ICAOS = ['TNCA','TNCC','TNCB'];
+
+/* ════════════════════════════════
+   SHARED DATA STORE
+════════════════════════════════ */
+const store = { metar:{}, taf:{}, api:{} };
+
+/* ════════════════════════════════
+   HELPERS
+════════════════════════════════ */
+const pad   = n => String(n).padStart(2,'0');
+const wdCard= d => ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'][Math.round((d%360)/22.5)%16];
+const catCol= c => ({VFR:'#4ade80',MVFR:'#5ab8ff',IFR:'#f87171',LIFR:'#e879f9'})[c]||'var(--text-dim)';
+const uvCol = u => u<=2?'#4ade80':u<=5?'#fbbf24':u<=7?'#fb923c':u<=10?'#f87171':'#e879f9';
+const uvLbl = u => u<=2?'Low':u<=5?'Moderate':u<=7?'High':u<=10?'Very High':'Extreme';
+
+function fmtUTC(str){
+  if(!str) return '—';
+  const d=new Date(str);
+  return `${pad(d.getUTCDate())}/${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}Z`;
+}
+
+/* ════════════════════════════════
+   CLOCKS
+════════════════════════════════ */
+function updateClocks(){
+  const now=new Date();
+  document.getElementById('clockUtc').textContent=`${pad(now.getUTCHours())}:${pad(now.getUTCMinutes())}:${pad(now.getUTCSeconds())}`;
+  const ast=new Date(now.toLocaleString('en-US',{timeZone:'America/Curacao'}));
+  document.getElementById('clockLocal').textContent=`${pad(ast.getHours())}:${pad(ast.getMinutes())}:${pad(ast.getSeconds())}`;
+}
+setInterval(updateClocks,1000);
+updateClocks();
+
+/* ════════════════════════════════
+   NIGHT MODE
+════════════════════════════════ */
+const nightBtn=document.getElementById('nightToggle');
+let isNight=false;
+nightBtn.onclick=()=>{
+  isNight=!isNight;
+  document.body.classList.toggle('night',isNight);
+  nightBtn.textContent=isNight?'☀️ Day':'🌙 Night';
+};
+
+/* ════════════════════════════════
+   MAP LOCK
+════════════════════════════════ */
+const lockToggle=document.getElementById('lockToggle');
+const lockLed   =document.getElementById('lockLed');
+const lockIcon  =document.getElementById('lockIcon');
+function setLock(locked){
+  document.body.dataset.locked=locked;
+  document.querySelectorAll('.overlay-blocker').forEach(el=>{ el.style.display=locked?'block':'none'; });
+  lockIcon.textContent=locked?'🔒':'🔓';
+  locked?lockLed.classList.remove('unlocked'):lockLed.classList.add('unlocked');
+}
+setLock(true);
+lockToggle.onclick=()=>{ setLock(document.body.dataset.locked!=='true'); };
+
+/* ════════════════════════════════
+   LIVE ATC STREAM PLAYERS
+   Persistent audio elements that survive tab switches and data
+   refreshes. Auto-reconnect on transient failures. Never reloaded
+   by the iframe-keep-alive system.
+════════════════════════════════ */
+document.querySelectorAll('.atc-player').forEach(card=>{
+  const url      = card.dataset.stream;
+  const btn      = card.querySelector('.atc-play-btn');
+  const icon     = card.querySelector('.atc-play-icon');
+  const statusEl = card.querySelector('.atc-status-text');
+  const volSlider= card.querySelector('.atc-vol-slider');
+
+  const audio = new Audio();
+  audio.preload = 'none';
+  audio.crossOrigin = 'anonymous';
+  audio.volume = volSlider.value/100;
+
+  let userWantsPlay = false;
+  let reconnectAttempts = 0;
+  let reconnectTimer = null;
+  const MAX_RECONNECTS = 5;
+
+  function setState(state){
+    card.classList.remove('loading','playing','error');
+    if(state) card.classList.add(state);
+    icon.textContent =
+      state==='loading' ? '◐' :
+      state==='playing' ? '■' : '▶';
+    statusEl.textContent =
+      state==='loading' ? 'Connecting' :
+      state==='playing' ? 'Live' :
+      state==='error'   ? (reconnectAttempts>0?`Retry ${reconnectAttempts}/${MAX_RECONNECTS}`:'Error') :
+                          'Idle';
+  }
+
+  function startStream(){
+    clearTimeout(reconnectTimer);
+    try{
+      audio.pause();
+      audio.removeAttribute('src');
+      audio.load();
+    }catch(_){}
+    setState('loading');
+    // Cache-bust in case the browser cached an old buffer
+    audio.src = url + (url.includes('?')?'&':'?') + 't=' + Date.now();
+    const playPromise = audio.play();
+    if(playPromise && playPromise.catch){
+      playPromise.catch(err=>{
+        console.warn('ATC play() rejected:',err.message);
+        scheduleReconnect();
+      });
+    }
+  }
+
+  function stopStream(){
+    userWantsPlay = false;
+    clearTimeout(reconnectTimer);
+    reconnectAttempts = 0;
+    try{
+      audio.pause();
+      audio.removeAttribute('src');
+      audio.load();
+    }catch(_){}
+    setState(null);
+  }
+
+  function scheduleReconnect(){
+    if(!userWantsPlay) return;
+    if(reconnectAttempts >= MAX_RECONNECTS){
+      setState('error');
+      reconnectAttempts = 0;
+      return;
+    }
+    reconnectAttempts++;
+    setState('error');
+    const delay = Math.min(2000 * reconnectAttempts, 10000);
+    reconnectTimer = setTimeout(()=>{
+      if(userWantsPlay) startStream();
+    }, delay);
+  }
+
+  audio.addEventListener('playing',()=>{
+    reconnectAttempts = 0;
+    setState('playing');
+  });
+  audio.addEventListener('waiting',()=>{
+    if(userWantsPlay) setState('loading');
+  });
+  audio.addEventListener('pause',  ()=>{
+    if(!userWantsPlay) setState(null);
+  });
+  audio.addEventListener('error',  ()=>{
+    if(userWantsPlay) scheduleReconnect();
+  });
+  audio.addEventListener('stalled',()=>{
+    if(userWantsPlay) setState('loading');
+  });
+  audio.addEventListener('ended',  ()=>{
+    if(userWantsPlay) scheduleReconnect();
+  });
+
+  btn.addEventListener('click',()=>{
+    if(userWantsPlay){
+      stopStream();
+    } else {
+      userWantsPlay = true;
+      reconnectAttempts = 0;
+      startStream();
+    }
+  });
+
+  volSlider.addEventListener('input',()=>{
+    audio.volume = volSlider.value/100;
+  });
+});
+
+/* ════════════════════════════════
+   TABS + KEYBOARD SHORTCUTS
+════════════════════════════════ */
+function switchTab(name){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));
+  document.querySelectorAll('.tab-pane').forEach(p=>{
+    const isActive=p.id==='tab-'+name;
+    p.classList.toggle('active',isActive);
+  });
+
+  // Track when each tab was last viewed (for stale-iframe detection).
+  tabLastSeen[name]=Date.now();
+
+  // Lazy-load static iframes the first time their tab opens.
+  const lazy = {
+    regional:  ['rwcFrame', 'https://gniusweather.github.io/RWC/'],
+    satellite: ['satFrame', 'https://www.weathernerds.org/satellite/?initsatsrc=On&initsatname=GOES-E&initsattype=ir&initcscheme=ir1&initimdimx=1050&initimdimy=601&initrange=13.250:-71.500:10.750:-66.250&initloop=False&initnframes=20&initlightningge=On&initlightninggw=Off&initltngfed=Off&initltngtoe=Off&initinterstates=On&initwarnings=On&initlatlon=Off&initascatb=Off&initascatc=Off&initascatambb=Off&initascatambc=Off&initsst=Off&initecens=Off&initgefs=Off'],
+  };
+  if(lazy[name]){
+    const [id,url]=lazy[name];
+    const f=document.getElementById(id);
+    if(f && !f.src) f.src=url;
+  }
+
+  // Flights tab: lazy-load whichever sub-frame is currently active
+  if(name==='flights'){
+    const active=document.querySelector('.flights-frame.active');
+    if(active && !active.src){
+      active.src = active.dataset.mode==='arrivals'
+        ? 'https://curacao-airport.com/flights/?type=arrivals'
+        : 'https://curacao-airport.com/flights/?type=departures';
+    }
+  }
+
+  // Lazy-init Windy iframes inside the tab being opened (data-src → src).
+  const pane=document.getElementById('tab-'+name);
+  if(pane){
+    pane.querySelectorAll('iframe.windy-iframe[data-src]').forEach(f=>{
+      if(!f.src){
+        f.src=f.getAttribute('data-src');
+        f.removeAttribute('data-src');
+      }
+    });
+  }
+
+  // Lazy-init data tabs
+  if(name==='forecast' && !forecastLoaded) loadForecast();
+  if(name==='marine'   && !marineLoaded)   loadMarine();
+
+  // Auto-refresh forecast/marine if data is >6 min stale when switching back to them
+  const STALE_RERENDER_MS = 6 * 60 * 1000;
+  if(name==='forecast' && forecastLoaded){
+    const age = Date.now() - (window._fcastLastRender||0);
+    if(age > STALE_RERENDER_MS){ loadForecast(); }
+  }
+  if(name==='marine' && marineLoaded){
+    const age = Date.now() - (window._marineLastRender||0);
+    if(age > STALE_RERENDER_MS){ marineLoaded=false; loadMarine(); }
+  }
+}
+
+const tabLastSeen={atc:Date.now()};
+let forecastLoaded=false, marineLoaded=false;
+
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    btn.classList.add('activating');
+    setTimeout(()=>btn.classList.remove('activating'), 600);
+    switchTab(btn.dataset.tab);
+  });
+});
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
+  const map={'1':'atc','2':'weather','3':'forecast','4':'marine','5':'notams','6':'regional','7':'satellite','8':'flights'};
+  if(map[e.key]) switchTab(map[e.key]);
+});
+
+// Flights sub-toggle (Departures ↔ Arrivals)
+document.querySelectorAll('.flights-toggle-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const mode=btn.dataset.flights;
+    document.querySelectorAll('.flights-toggle-btn').forEach(b=>b.classList.toggle('active',b===btn));
+    document.querySelectorAll('.flights-frame').forEach(f=>{
+      const on=f.dataset.mode===mode;
+      f.classList.toggle('active',on);
+      f.style.display = on ? '' : 'none';
+      // Lazy-load whichever side is being switched to
+      if(on && !f.src){
+        f.src = mode==='arrivals'
+          ? 'https://curacao-airport.com/flights/?type=arrivals'
+          : 'https://curacao-airport.com/flights/?type=departures';
+      }
+    });
+  });
+});
+
+/* ════════════════════════════════
+   REFRESH PROGRESS BAR
+════════════════════════════════ */
+let refreshStart=Date.now();
+function tickBar(){
+  const pct=Math.min(100,((Date.now()-refreshStart)/REFRESH_MS)*100);
+  document.getElementById('refreshProgress').style.width=pct+'%';
+}
+setInterval(tickBar,1000);
+
+function resetBar(){
+  refreshStart=Date.now();
+  const bar=document.getElementById('refreshProgress');
+  bar.style.transition='none';
+  bar.style.width='0%';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{ bar.style.transition='width 1s linear'; }));
+}
+
+/* ════════════════════════════════
+   NOTAMs — live from Aviation Weather Center (FAA)
+   Free, CORS-OK, updated in real time.
+   We fetch for TNCA, TNCC, TNCB and merge + deduplicate.
+════════════════════════════════ */
+let notamData = [];
+let notamFilter = 'ALL';
+
+function classifyNotam(n){
+  // Extract useful fields from AWC NOTAM JSON
+  const text  = (n.traditionalMessage || n.icaoMessage || '').toUpperCase();
+  const klass = n.classification || '';
+  // Warn if OBSTACLE, RWY CLOSED, TAXIWAY CLOSED, NAV AID, AIRSPACE restriction, critical ops
+  const warnKeys = /CLSD|UNSERVICEABLE|OUT OF SERVICE|OBSTACLE|CRANE|BIRD|BIRD HAZARD|HAZARD|GUN|BLASTING|EXPLOSIVE|MIL OPS|UAS|DRONE|LASER|PARA|FIREWORKS/;
+  const warn = warnKeys.test(text) || klass==='CRITICAL';
+
+  // Age classification based on effectiveStart
+  let status = 'AGING';
+  if(n.effectiveStart){
+    const ageHrs = (Date.now() - new Date(n.effectiveStart).getTime()) / 3600000;
+    if(ageHrs < 6)  status = 'FRESH';
+    else if(ageHrs < 48) status = 'RECENT';
+  }
+
+  // Human-readable tag from NOTAM Q-line or subject
+  const qSubj = n.qLine?.subject || n.subject || klass || 'INFO';
+  const icao   = n.icaoId || n.location || '—';
+  const tag    = `${icao} · ${qSubj.replace(/_/g,' ')}`;
+
+  // Time window
+  const start = n.effectiveStart ? new Date(n.effectiveStart).toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'UTC'})+'Z' : '';
+  const end   = n.effectiveEnd   ? new Date(n.effectiveEnd  ).toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'UTC'})+'Z' : 'PERM';
+
+  const body = n.traditionalMessage || n.icaoMessage || n.text || '—';
+
+  return { tag, text: body, time: start && end ? `${start} – ${end}` : start || end, warn, status, icao, raw: body };
+}
+
+function renderNotams(){
+  const STATUS_ORDER = {FRESH:0,RECENT:1,AGING:2};
+  const sorted = [...notamData].sort((a,b)=>{
+    const sd = (STATUS_ORDER[a.status]??3) - (STATUS_ORDER[b.status]??3);
+    if(sd!==0) return sd;
+    return (b.warn?1:0)-(a.warn?1:0);
+  });
+  const filtered = notamFilter==='WARN' ? sorted.filter(n=>n.warn)
+    : notamFilter==='ALL' ? sorted
+    : sorted.filter(n=>n.status===notamFilter);
+
+  const fresh  = sorted.filter(n=>n.status==='FRESH').length;
+  const recent = sorted.filter(n=>n.status==='RECENT').length;
+  const warns  = sorted.filter(n=>n.warn).length;
+  document.getElementById('notamStatusText').textContent =
+    sorted.length ? `${sorted.length} active · ${fresh} fresh · ${recent} recent · ${warns} warnings`
+                  : 'Loading…';
+
+  if(!filtered.length){
+    document.getElementById('notamList').innerHTML =
+      `<div style="padding:20px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center">${notamData.length?'No NOTAMs match current filter.':'Fetching live NOTAMs…'}</div>`;
+    return;
+  }
+
+  document.getElementById('notamList').innerHTML = filtered.map(n=>{
+    const statusBadge = n.status==='FRESH'
+      ? `<span class="notam-badge-fresh">FRESH</span>`
+      : n.status==='RECENT'
+      ? `<span class="notam-badge-recent">RECENT</span>` : '';
+    const warnPfx = n.warn ? `<span class="notam-badge-warn">⚠ WARN</span>` : '';
+    return `<div class="notam-item${n.warn?' warn':''}">
+      <span class="notam-id">${n.tag}${statusBadge}${warnPfx}
+        <span style="opacity:.5;font-size:.52rem;font-weight:500;margin-left:4px">${n.time}</span>
+      </span>
+      ${n.text}
+    </div>`;
+  }).join('');
+}
+
+async function fetchNotams(){
+  setBadge('notamBadge','LOADING','loading');
+  try{
+    // AWC v2 NOTAM API — free, CORS-OK
+    // Fetch for all three ABC airports in one call
+    const url = `https://aviationweather.gov/api/data/notam?`+
+      `icaos=TNCA,TNCC,TNCB&format=json&limit=200`;
+    const r = await fetch(url, {cache:'no-store'});
+    if(!r.ok) throw new Error('AWC NOTAM '+r.status);
+    const raw = await r.json();
+    const items = Array.isArray(raw) ? raw : (raw.items || raw.data || []);
+
+    // Deduplicate by notamId
+    const seen = new Set();
+    notamData = items.filter(n=>{
+      const id = n.notamId || n.id || JSON.stringify(n).slice(0,40);
+      if(seen.has(id)) return false;
+      seen.add(id);
+      return true;
+    }).map(classifyNotam);
+
+    renderNotams();
+    setBadge('notamBadge','LIVE');
+
+    // Warn badge on NOTAM tab if there are fresh warnings
+    const critCount = notamData.filter(n=>n.warn && n.status!=='AGING').length;
+    const notamTabBtn = document.querySelector('.tab-btn[data-tab="notams"]');
+    if(notamTabBtn && critCount > 0){
+      notamTabBtn.dataset.notamCount = critCount;
+      notamTabBtn.title = `${critCount} active warning NOTAM${critCount>1?'s':''}`;
+    }
+  }catch(err){
+    console.warn('[NOTAMs]', err.message);
+    setBadge('notamBadge','ERROR','error');
+    // Fallback message
+    document.getElementById('notamList').innerHTML =
+      `<div style="padding:14px;font-family:var(--mono);font-size:.6rem;color:#f87171">
+        NOTAM fetch failed: ${err.message}
+        <br><a href="https://pilotweb.nas.faa.gov/PilotWeb/notamRetrievalByICAOAction.do?method=displayByICAO&reportType=RAW&formatType=DOMESTIC&retrieveLocId=TNCC&actionType=notamRetrievalByICAO" target="_blank" style="color:var(--cyan)">Open FAA NOTAM lookup ↗</a>
+      </div>`;
+  }
+}
+
+// Initial fetch + refresh every 30 min
+fetchNotams();
+setInterval(fetchNotams, 30 * 60 * 1000);
+
+document.getElementById('notamFilter').addEventListener('click', e=>{
+  const btn = e.target.closest('.notam-filter-btn');
+  if(!btn) return;
+  document.querySelectorAll('.notam-filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  notamFilter = btn.dataset.filter;
+  renderNotams();
+});
+
+/* ════════════════════════════════
+   METAR RENDER
+════════════════════════════════ */
+function renderMETAR(icao,d){
+  const pfx=icao.toLowerCase();
+  document.getElementById(`metar-raw-${pfx}`).textContent=d.raw_text||'—';
+
+  const obs=d.observed?new Date(d.observed):null;
+  const obsStr=obs?fmtUTC(d.observed):'—';
+  const ageMin=obs?Math.round((Date.now()-obs.getTime())/60000):null;
+  const ageWarn=ageMin!==null&&ageMin>90;
+  document.getElementById(`metar-age-${pfx}`).innerHTML=
+    `CheckWX · Obs ${obsStr}`+
+    (ageMin!==null?` · <span style="color:${ageWarn?'#f87171':'#4ade80'};font-weight:600">${ageMin} min ago</span>`:'')+
+    ` · refreshes every 5 min`;
+
+  const wind =d.wind||{};
+  const wdeg =wind.degrees!==undefined?pad(wind.degrees)+'°':(wind.direction==='VRB'?'VRB':'—');
+  const wcard=wind.degrees!==undefined?wdCard(wind.degrees):'';
+  const wspd =wind.speed_kts!==undefined?wind.speed_kts:'—';
+  const wgst =wind.gust_kts !==undefined?wind.gust_kts:'—';
+  const gustHi=wind.gust_kts>25;
+
+  const tempC=d.temperature?.celsius;
+  const dewC =d.dewpoint?.celsius;
+  const temp =tempC!==undefined?tempC+'°':'—';
+  const dew  =dewC !==undefined?dewC +'°':'—';
+  const rh   =d.humidity?.percent!==undefined?d.humidity.percent+'%':'—';
+  const qnh  =d.barometer?.hpa   !==undefined?d.barometer.hpa:'—';
+  const qnhHg=d.barometer?.hg    !==undefined?d.barometer.hg+' inHg':'';
+
+  const visMtr=d.visibility?.meters;
+  const vis=visMtr!==undefined
+    ?(visMtr>=9999?'>10 km':(visMtr/1000).toFixed(1)+' km')
+    :(d.visibility?.miles!==undefined?d.visibility.miles+' SM':'—');
+
+  const clouds=(d.clouds||[]).map(c=>`${c.code} ${c.base_feet_agl}ft`).join(' · ')||'CAVOK';
+  const ceil =d.ceiling?.feet!==undefined?d.ceiling.feet+'ft':'—';
+  const cat  =d.flight_category||'—';
+  const cond =(d.conditions||[]).map(c=>c.text||c.code).join(', ');
+
+  // Category pill in header
+  const catEl=document.getElementById(`metar-cat-${pfx}`);
+  catEl.className='metar-cat-pill';
+  catEl.style.color=catCol(cat);
+  catEl.style.boxShadow=`0 0 14px ${catCol(cat)}33`;
+  catEl.innerHTML = `${cat}${cond?`<span class="metar-cond">${cond}</span>`:''}`;
+
+  // Compact horizontal grid
+  const gustColor = gustHi ? '#f87171' : 'var(--accent-bright)';
+  const rhColor   = d.humidity?.percent>85 ? '#fbbf24' : 'var(--accent-bright)';
+
+  document.getElementById(`metar-dec-${pfx}`).innerHTML=`
+    <div class="metar-grid">
+      <div class="metar-cell">
+        <div class="metar-cell-lbl">Temp</div>
+        <div class="metar-cell-val">${temp}</div>
+      </div>
+      <div class="metar-cell">
+        <div class="metar-cell-lbl">Dew</div>
+        <div class="metar-cell-val">${dew}</div>
+      </div>
+      <div class="metar-cell">
+        <div class="metar-cell-lbl">RH</div>
+        <div class="metar-cell-val" style="color:${rhColor}">${rh}</div>
+      </div>
+      <div class="metar-cell">
+        <div class="metar-cell-lbl">Wind</div>
+        <div class="metar-cell-val">${wdeg}</div>
+        ${wcard?`<div class="metar-cell-sub">${wcard}</div>`:''}
+      </div>
+      <div class="metar-cell">
+        <div class="metar-cell-lbl">Speed</div>
+        <div class="metar-cell-val">${wspd}<span style="font-size:.55rem;color:var(--text-dim);font-weight:500">${wspd!=='—'?' KT':''}</span></div>
+      </div>
+      <div class="metar-cell">
+        <div class="metar-cell-lbl">Gust</div>
+        <div class="metar-cell-val" style="color:${gustColor}">${wgst}<span style="font-size:.55rem;color:var(--text-dim);font-weight:500">${wgst!=='—'?' KT':''}</span></div>
+      </div>
+      <div class="metar-cell">
+        <div class="metar-cell-lbl">QNH</div>
+        <div class="metar-cell-val">${qnh}<span style="font-size:.55rem;color:var(--text-dim);font-weight:500">${qnh!=='—'?' hPa':''}</span></div>
+        ${qnhHg?`<div class="metar-cell-sub">${qnhHg}</div>`:''}
+      </div>
+      <div class="metar-cell">
+        <div class="metar-cell-lbl">Vis</div>
+        <div class="metar-cell-val">${vis}</div>
+      </div>
+      <div class="metar-cell">
+        <div class="metar-cell-lbl">Ceil</div>
+        <div class="metar-cell-val">${ceil}</div>
+      </div>
+      <div class="metar-cell">
+        <div class="metar-cell-lbl">Cat</div>
+        <div class="metar-cell-val" style="color:${catCol(cat)};text-shadow:0 0 10px ${catCol(cat)}">${cat}</div>
+      </div>
+    </div>
+    <div class="metar-clouds-row">
+      <span class="lbl">Clouds</span>
+      <span>${clouds}</span>
+    </div>
+  `;
+}
+
+/* ════════════════════════════════
+   TAF RENDER
+════════════════════════════════ */
+function renderTAFStrip(tafList){
+  if(!tafList||!tafList.length){
+    document.getElementById('taf-strip').innerHTML=
+      `<div style="padding:14px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim)">TAF data unavailable.</div>`;
+    setBadge('tafBadge','UNAVAIL','error');
+    return;
+  }
+
+  let html='';
+  tafList.forEach(d=>{
+    const ap=AIRPORTS[d.icao]||{};
+    const validity=d.timestamp
+      ?`Valid ${fmtUTC(d.timestamp.valid_from)} → ${fmtUTC(d.timestamp.valid_to)}`:'';
+
+    const periods=(d.forecast||[]).map(f=>{
+      const from=fmtUTC(f.timestamp?.from);
+      const to  =fmtUTC(f.timestamp?.to);
+      const chgCode=(f.change?.indicator?.code||'FM').replace(/\d+/,'');
+      const chgText =f.change?.indicator?.text||'FM';
+      const windObj=f.wind||{};
+      const windStr=windObj.speed_kts!==undefined
+        ?`${pad(windObj.degrees||0)}° ${wdCard(windObj.degrees||0)} ${windObj.speed_kts} KT${windObj.gust_kts?` G${windObj.gust_kts} KT`:''}`
+        :'—';
+      const visMtr=f.visibility?.meters;
+      const visStr=visMtr!==undefined?(visMtr>=9999?'>10 km':(visMtr/1000).toFixed(1)+' km'):'—';
+      const sky=(f.clouds||[]).map(c=>`${c.code} ${c.base_feet_agl}ft`).join(' ')||'SKC';
+      const wx=(f.conditions||[]).map(c=>c.code||c.text).join(' ')||'';
+
+      return `<div class="taf-period chg-${chgCode}">
+        <div class="taf-cell time">${from} → ${to}</div>
+        <div class="taf-cell chg">${chgText}</div>
+        <div class="taf-cell wind">${windStr}</div>
+        <div class="taf-cell">${visStr}</div>
+        <div class="taf-cell" style="font-size:.58rem">${sky}</div>
+        <div class="taf-cell wx">${wx}</div>
+      </div>`;
+    }).join('');
+
+    html+=`
+      <div class="taf-card" style="border-bottom:1px solid var(--border)">
+        <div class="taf-header">
+          <span class="taf-icao">${d.icao}</span>
+          <span class="taf-airport">${ap.label||''}</span>
+          <span class="taf-validity">${validity}</span>
+        </div>
+        <div class="taf-raw">${d.raw_text||'—'}</div>
+        <div class="taf-timeline">
+          <div class="taf-header-row">
+            <div class="taf-col-hdr">Period</div>
+            <div class="taf-col-hdr">Change</div>
+            <div class="taf-col-hdr">Wind</div>
+            <div class="taf-col-hdr">Visibility</div>
+            <div class="taf-col-hdr">Sky</div>
+            <div class="taf-col-hdr">Wx</div>
+          </div>
+          ${periods||'<div style="padding:8px 14px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim)">No forecast periods.</div>'}
+        </div>
+      </div>`;
+  });
+  document.getElementById('taf-strip').innerHTML=html;
+  setBadge('tafBadge','LIVE');
+}
+
+/* ════════════════════════════════
+   ISLAND CARDS
+════════════════════════════════ */
+function isCell(lbl,val,sub,color){
+  return `<div style="padding:10px 12px 10px 16px;border-right:1px solid var(--border);border-bottom:1px solid var(--border)">
+    <div style="font-family:var(--mono);font-size:.46rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px;font-weight:500">${lbl}</div>
+    <div style="font-family:var(--display);font-size:.95rem;font-weight:600;color:${color||'var(--accent-bright)'};line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.01em">${val}</div>
+    ${sub?`<div style="font-family:var(--mono);font-size:.46rem;color:${color&&sub!==val?color:'var(--text-dim)'};margin-top:3px;font-weight:500">${sub}</div>`:''}
+  </div>`;
+}
+
+function renderIslandCards(){
+  const container=document.getElementById('island-cards');
+  let html='';
+
+  ICAOS.forEach((icao,idx)=>{
+    const ap=AIRPORTS[icao];
+    const m=store.metar[icao];
+    const a=store.api[icao];
+
+    const cat   =m?.flight_category||'—';
+    const tempC =m?.temperature?.celsius;
+    const dewC  =m?.dewpoint?.celsius;
+    const rh    =m?.humidity?.percent;
+    const windDeg=m?.wind?.degrees;
+    const windKt =m?.wind?.speed_kts;
+    const gustKt =m?.wind?.gust_kts;
+    const qnhHpa =m?.barometer?.hpa;
+    const visMtr =m?.visibility?.meters;
+    const ceilFt =m?.ceiling?.feet;
+    const clouds =(m?.clouds||[]).map(c=>`${c.code} ${c.base_feet_agl}ft`).join(' · ')||'CAVOK';
+    const rawStr =m?.raw_text||'';
+    const obsTime=m?.observed?new Date(m.observed):null;
+    const ageMin =obsTime?Math.round((Date.now()-obsTime.getTime())/60000):null;
+    const obsStr =obsTime?fmtUTC(m.observed):'—';
+
+    const condText =a?.current?.condition?.text||'—';
+    const feelsC   =a?.current?.feelslike_c;
+    const rhApi    =a?.current?.humidity;
+    const cloudPct =a?.current?.cloud;
+    const precipMm =a?.current?.precip_mm;
+    const uvIdx    =a?.current?.uv;
+    const localTime=a?.location?.localtime?.split(' ')[1]||'—';
+    const rhVal    =rh??rhApi;
+
+    // Map WeatherAPI condition code to our WMO-style animated SVG.
+    const wmoCode = mapWeatherApiToWMO(a?.current?.condition?.code, a?.current?.condition?.text||'');
+    const wxIcon = animatedWeatherSVG(wmoCode);
+
+    const tempDisp = tempC!==undefined ? Math.round(tempC) : (a?.current?.temp_c!==undefined ? Math.round(a.current.temp_c) : null);
+    const feelsDisp = feelsC!==undefined ? Math.round(feelsC) : null;
+
+    // Wind direction: METAR reports the direction wind is COMING FROM.
+    // For an arrow showing where the wind is BLOWING TO, add 180°.
+    const windFromDeg = windDeg ?? a?.current?.wind_degree ?? 0;
+    const windToDeg   = (windFromDeg + 180) % 360;
+    const windFromCard = windFromDeg!==undefined ? wdCard(windFromDeg) : '';
+    const windKtFinal = windKt ?? (a?.current ? Math.round(a.current.wind_kph*0.539957) : 0);
+    const gustKtFinal = gustKt ?? 0;
+    const peakKt = Math.max(windKtFinal, gustKtFinal);
+    const windCol = peakKt >= 25 ? '#f87171' : peakKt >= 18 ? '#fbbf24' : '#22d3ee';
+
+    // UV color and label
+    const uv = uvIdx ?? 0;
+    const uvCl = uv<=2?'#4ade80':uv<=5?'#fbbf24':uv<=7?'#fb923c':uv<=10?'#f87171':'#e879f9';
+    const uvL  = uv<=2?'Low':uv<=5?'Moderate':uv<=7?'High':uv<=10?'V.High':'Extreme';
+
+    // Humidity color
+    const rhCol = (rhVal>85)?'#fbbf24':(rhVal<35)?'#fb923c':'var(--accent-bright)';
+
+    // Build a temp gradient bar (dew → feels → temp)
+    const tMin = Math.min(dewC ?? 22, tempC ?? 28) - 2;
+    const tMax = Math.max(tempC ?? 28, feelsC ?? 28) + 2;
+    const span = tMax - tMin;
+    const dewFrac   = dewC!==undefined ? ((dewC - tMin)/span)*100 : null;
+    const tempFrac  = tempC!==undefined ? ((tempC - tMin)/span)*100 : 50;
+    const feelsFrac = feelsC!==undefined ? ((feelsC - tMin)/span)*100 : null;
+
+    const ageWarn = ageMin>90;
+
+    html+=`
+      <div data-icao="${icao}" class="island-card-v2">
+
+        <!-- HEADER -->
+        <div class="ic-header">
+          <span class="ic-flag">${ap.flag}</span>
+          <div class="ic-name-block">
+            <div class="ic-name">${ap.name}</div>
+            <div class="ic-sub">${icao} · ${ap.label.split('·')[0].trim()}</div>
+          </div>
+          <div class="ic-icon-big">${wxIcon}</div>
+          <div class="ic-cat">
+            <div class="ic-cat-val" style="color:${catCol(cat)};text-shadow:0 0 14px ${catCol(cat)}">${cat}</div>
+            <div class="ic-cat-cond">${condText}</div>
+          </div>
+          <div class="ic-temp-block">
+            <div class="ic-temp" data-temp>${tempDisp!==null?tempDisp+'°':'—'}</div>
+            <div class="ic-temp-sub">${localTime} · ${obsStr}</div>
+          </div>
+        </div>
+
+        <!-- TEMP / FEEL / DEW BAR -->
+        <div class="ic-section ic-temp-row">
+          <span class="ic-temp-low">DEW ${dewC!==undefined?Math.round(dewC)+'°':'—'}</span>
+          <div class="ic-temp-bar">
+            <div class="ic-temp-bar-fill"></div>
+            ${dewFrac!==null?`<div class="ic-marker ic-marker-dew" style="left:${dewFrac}%" title="Dew point"></div>`:''}
+            ${feelsFrac!==null?`<div class="ic-marker ic-marker-feels" style="left:${feelsFrac}%" title="Feels like ${Math.round(feelsC)}°"></div>`:''}
+            <div class="ic-marker ic-marker-temp" style="left:${tempFrac}%"></div>
+          </div>
+          <span class="ic-temp-high">${tempDisp!==null?tempDisp+'°':'—'}</span>
+        </div>
+
+        <!-- HUMIDITY BAR -->
+        <div class="ic-section ic-bar-row">
+          <span class="ic-bar-icon">💧</span>
+          <div class="ic-bar-track">
+            <div class="ic-bar-fill" style="width:${rhVal??0}%;background:linear-gradient(90deg,#22d3ee,${rhCol})"></div>
+          </div>
+          <span class="ic-bar-val" style="color:${rhCol}">${rhVal!==null&&rhVal!==undefined?Math.round(rhVal)+'%':'—'}</span>
+          <span class="ic-bar-sub">RH</span>
+        </div>
+
+        <!-- CLOUD BAR -->
+        <div class="ic-section ic-bar-row">
+          <span class="ic-bar-icon">☁️</span>
+          <div class="ic-bar-track">
+            <div class="ic-bar-fill" style="width:${cloudPct??0}%;background:linear-gradient(90deg,rgba(155,212,255,0.5),rgba(203,217,236,0.9))"></div>
+          </div>
+          <span class="ic-bar-val">${cloudPct!==undefined?cloudPct+'%':'—'}</span>
+          <span class="ic-bar-sub">CLD</span>
+        </div>
+
+        <!-- METER ROW: WIND COMPASS + UV GAUGE -->
+        <div class="ic-section ic-meter-row">
+
+          <div class="ic-meter">
+            <svg class="ic-wind-compass" viewBox="0 0 80 80" style="--wind-deg:${windToDeg}deg;--wind-color:${windCol}">
+              <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(34,211,238,0.18)" stroke-width="1"/>
+              <circle cx="40" cy="40" r="26" fill="none" stroke="rgba(34,211,238,0.08)" stroke-width="1" stroke-dasharray="2 4"/>
+              <text x="40" y="11" text-anchor="middle" font-size="6" fill="rgba(155,212,255,0.5)" font-family="monospace">N</text>
+              <text x="71" y="42" text-anchor="middle" font-size="6" fill="rgba(155,212,255,0.5)" font-family="monospace">E</text>
+              <text x="40" y="74" text-anchor="middle" font-size="6" fill="rgba(155,212,255,0.5)" font-family="monospace">S</text>
+              <text x="9"  y="42" text-anchor="middle" font-size="6" fill="rgba(155,212,255,0.5)" font-family="monospace">W</text>
+              <g class="ic-wind-rotor">
+                <line x1="40" y1="40" x2="40" y2="${40 - Math.min(28, 12 + peakKt*0.7)}" stroke="${windCol}" stroke-width="2.8" stroke-linecap="round"/>
+                <polygon points="40,${40 - Math.min(28, 12 + peakKt*0.7) - 6} 36,${40 - Math.min(28, 12 + peakKt*0.7) + 1} 44,${40 - Math.min(28, 12 + peakKt*0.7) + 1}" fill="${windCol}"/>
+              </g>
+              <circle cx="40" cy="40" r="3" fill="${windCol}" style="filter:drop-shadow(0 0 4px ${windCol})"/>
+            </svg>
+            <div class="ic-meter-info">
+              <div class="ic-meter-lbl">Wind to</div>
+              <div class="ic-meter-val" style="color:${windCol}">${windKtFinal} <span class="ic-meter-unit">kt</span></div>
+              <div class="ic-meter-sub">FROM ${pad(Math.round(windFromDeg))}° ${windFromCard}${gustKtFinal?` · G${gustKtFinal}`:''}</div>
+            </div>
+          </div>
+
+          <div class="ic-meter">
+            <svg class="ic-uv-gauge" viewBox="0 0 80 80">
+              <path d="M 14 58 A 26 26 0 0 1 66 58" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="6" stroke-linecap="round"/>
+              <path d="M 14 58 A 26 26 0 0 1 66 58" fill="none" stroke="${uvCl}" stroke-width="6" stroke-linecap="round" stroke-dasharray="${Math.min(uv,11)/11 * 82} 100" style="filter:drop-shadow(0 0 6px ${uvCl})"/>
+              <text x="40" y="54" text-anchor="middle" font-size="16" fill="${uvCl}" font-weight="700" font-family="var(--display),sans-serif">${uv.toFixed(1)}</text>
+            </svg>
+            <div class="ic-meter-info">
+              <div class="ic-meter-lbl">UV Index</div>
+              <div class="ic-meter-val" style="color:${uvCl}">${uvL}</div>
+              <div class="ic-meter-sub">${precipMm>0?`${precipMm}mm rain`:'No rain'}</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- AVIATION DATA STRIP -->
+        <div class="ic-section ic-stats">
+          <div class="ic-stat">
+            <div class="ic-stat-lbl">QNH</div>
+            <div class="ic-stat-val">${qnhHpa!==undefined?qnhHpa:'—'}<span class="ic-stat-unit">${qnhHpa!==undefined?' hPa':''}</span></div>
+          </div>
+          <div class="ic-stat">
+            <div class="ic-stat-lbl">Vis</div>
+            <div class="ic-stat-val">${visMtr!==undefined?(visMtr>=9999?'>10':(visMtr/1000).toFixed(1)):'—'}<span class="ic-stat-unit">${visMtr!==undefined?' km':''}</span></div>
+          </div>
+          <div class="ic-stat">
+            <div class="ic-stat-lbl">Ceiling</div>
+            <div class="ic-stat-val">${ceilFt!==undefined?ceilFt:'—'}<span class="ic-stat-unit">${ceilFt!==undefined?' ft':''}</span></div>
+          </div>
+          <div class="ic-stat">
+            <div class="ic-stat-lbl">Feels</div>
+            <div class="ic-stat-val">${feelsDisp!==null?feelsDisp+'°':'—'}</div>
+          </div>
+          <div class="ic-stat">
+            <div class="ic-stat-lbl">Clouds</div>
+            <div class="ic-stat-val ic-stat-clouds">${clouds}</div>
+          </div>
+          <div class="ic-stat">
+            <div class="ic-stat-lbl">Obs Age</div>
+            <div class="ic-stat-val" style="color:${ageWarn?'#f87171':'#4ade80'}">${ageMin!==null?ageMin+' min':'—'}</div>
+          </div>
+        </div>
+
+        ${rawStr?`<div class="ic-raw"><span class="ic-raw-lbl">RAW</span>${rawStr}</div>`:''}
+      </div>`;
+  });
+
+  container.innerHTML=html||`<div style="padding:24px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center">No data available.</div>`;
+}
+
+/* Map WeatherAPI condition codes to WMO-ish codes that animatedWeatherSVG understands.
+   Reference: weatherapi.com docs lists ~50 codes; we cluster into the buckets we have. */
+function mapWeatherApiToWMO(code, text){
+  if(!code) {
+    // Fallback by text
+    text=(text||'').toLowerCase();
+    if(text.includes('thunder')) return 95;
+    if(text.includes('drizzle')) return 51;
+    if(text.includes('shower')) return 80;
+    if(text.includes('rain')) return 61;
+    if(text.includes('fog') || text.includes('mist')) return 45;
+    if(text.includes('overcast')) return 3;
+    if(text.includes('cloud')) return 2;
+    return 0;
+  }
+  const m={
+    1000:0,    // clear
+    1003:2,    // partly cloudy
+    1006:3,    // cloudy
+    1009:3,    // overcast
+    1030:45,   // mist
+    1063:80,   // patchy rain
+    1066:71,   // patchy snow
+    1069:66,   // sleet
+    1072:51,   // freezing drizzle
+    1087:95,   // thunder possible
+    1114:71,   // blowing snow
+    1117:75,   // blizzard
+    1135:45,   // fog
+    1147:48,   // freezing fog
+    1150:51,1153:51,1168:56,1171:57,
+    1180:80,1183:61,1186:80,1189:63,1192:82,1195:65,
+    1198:66,1201:67,
+    1204:71,1207:73,
+    1210:71,1213:71,1216:73,1219:73,1222:75,1225:75,
+    1237:71,
+    1240:80,1243:81,1246:82,
+    1249:71,1252:73,1255:71,1258:73,1261:71,1264:73,
+    1273:95,1276:96,1279:95,1282:99
+  };
+  return m[code] ?? 2;
+}
+
+/* ════════════════════════════════
+   BADGE HELPER
+════════════════════════════════ */
+function setBadge(id,text,cls){
+  const el=document.getElementById(id);
+  if(!el) return;
+  el.textContent=text;
+  el.className='data-badge'+(cls?' '+cls:'');
+}
+
+/* ════════════════════════════════
+   FETCH — direct API or Worker proxy
+   If PROXY_BASE is set, all calls route through your Cloudflare
+   Worker and the keys below stay hidden from the browser.
+   If PROXY_BASE is empty the keys are used directly (fallback).
+════════════════════════════════ */
+async function fetchMETAR(){
+  const url = PROXY_BASE
+    ? `${PROXY_BASE}/metar/TNCA,TNCC,TNCB`
+    : 'https://api.checkwx.com/metar/TNCA,TNCC,TNCB/decoded';
+  const opts = PROXY_BASE ? {cache:'no-store'} : {headers:{'X-API-Key':CHECKWX_KEY},cache:'no-store'};
+  const res = await fetch(url, opts);
+  if(!res.ok) throw new Error('METAR HTTP '+res.status);
+  const json = await res.json();
+  (json.data||[]).forEach(d=>{ store.metar[d.icao]=d; });
+}
+
+async function fetchTAF(){
+  const url = PROXY_BASE
+    ? `${PROXY_BASE}/taf/TNCA,TNCC,TNCB`
+    : 'https://api.checkwx.com/taf/TNCA,TNCC,TNCB/decoded';
+  const opts = PROXY_BASE ? {cache:'no-store'} : {headers:{'X-API-Key':CHECKWX_KEY},cache:'no-store'};
+  const res = await fetch(url, opts);
+  if(!res.ok) throw new Error('TAF HTTP '+res.status);
+  const json = await res.json();
+  return json.data||[];
+}
+
+async function fetchWeatherAPI(icao){
+  const q = AIRPORTS[icao]?.q;
+  if(!q) return;
+  try{
+    // forecast.json gives us current + 3-day + AQI + alerts in one call
+    const url = PROXY_BASE
+      ? `${PROXY_BASE}/wx?q=${encodeURIComponent(q)}&days=3&aqi=yes&alerts=yes`
+      : `https://api.weatherapi.com/v1/forecast.json?key=${WX_API_KEY}&q=${encodeURIComponent(q)}&days=3&aqi=yes&alerts=yes`;
+    const res = await fetch(url, {cache:'no-store'});
+    if(!res.ok) throw new Error(res.status);
+    store.api[icao] = await res.json();
+  }catch(e){ console.warn(`weatherapi ${icao}:`,e.message); }
+}
+
+/* ════════════════════════════════
+   MAIN REFRESH CYCLE
+════════════════════════════════ */
+async function refresh(){
+  resetBar();
+
+  try{
+    await fetchMETAR();
+    ICAOS.forEach(icao=>{ if(store.metar[icao]) renderMETAR(icao,store.metar[icao]); });
+    setBadge('metarBadge','LIVE');
+    // Warn on badge if any METAR is >60 min stale
+    const maxAge = Math.max(...ICAOS.map(i=>{
+      const obs = store.metar[i]?.observed;
+      return obs ? (Date.now()-new Date(obs).getTime())/60000 : 0;
+    }));
+    if(maxAge > 60) setBadge('metarBadge',`${Math.round(maxAge)}MIN`,'error');
+    else if(maxAge > 40) setBadge('metarBadge',`${Math.round(maxAge)}MIN`,'loading');
+  }catch(e){
+    console.error('METAR fetch failed:',e.message);
+    ICAOS.forEach(icao=>{
+      const el=document.getElementById(`metar-raw-${icao.toLowerCase()}`);
+      if(el) el.textContent='❌ '+e.message;
+    });
+    setBadge('metarBadge','ERROR','error');
+  }
+
+  try{
+    const tafData=await fetchTAF();
+    tafData.forEach(d=>{ store.taf[d.icao]=d; });
+    renderTAFStrip(ICAOS.map(i=>store.taf[i]).filter(Boolean));
+  }catch(e){
+    console.warn('TAF fetch failed:',e.message);
+    renderTAFStrip(null);
+  }
+
+  await Promise.all(ICAOS.map(fetchWeatherAPI));
+
+  renderIslandCards();
+  setBadge('islandBadge','LIVE');
+
+  // If forecast tab is currently open, re-render it with fresh data
+  const activePaneId = document.querySelector('.tab-pane.active')?.id;
+  if(activePaneId === 'tab-forecast' && forecastLoaded){
+    loadForecast();
+  }
+
+  // Flash temperature values briefly to show they updated
+  document.querySelectorAll('#island-cards [data-temp]').forEach(el=>{
+    el.classList.remove('value-fresh');
+    void el.offsetWidth;  // force reflow so animation re-runs
+    el.classList.add('value-fresh');
+  });
+}
+
+refresh();
+setInterval(refresh,REFRESH_MS);
+
+/* ════════════════════════════════
+   IFRAME KEEP-ALIVE
+   Some embedded sites (Windy, satellite views) crash to a black
+   screen after many hours. We refresh stale iframes silently, but
+   ONLY iframes the user isn't currently looking at, NEVER anything
+   in the ATC tab (which holds the audio streams), and NEVER while
+   the browser tab is in the background (throttled timers cause
+   broken loads).
+
+   Smooth reload: load the new src into a hidden replacement iframe,
+   swap in only when ready — user never sees a blank flash.
+
+   A small "↻" button appears in the top-right on hover so you can
+   force a refresh manually if any panel does go black.
+════════════════════════════════ */
+const IFRAME_STALE_MS = 90 * 60 * 1000;
+const iframeLastLoad  = new WeakMap();
+
+/* Reload an iframe without the black-flash.
+   Strategy: swap src to blank first (forces browser to clear render), 
+   then after one frame set it back to the real URL. We do NOT clone — 
+   cloning breaks JS-heavy apps like flight trackers.
+   The "white flash" is masked by a temporary ::after overlay on the parent. */
+function smoothReloadIframe(frame){
+  if(!frame || frame.dataset.noStale === '1') return;
+  const url = frame.dataset.lastSrc || frame.src;
+  if(!url || url === 'about:blank') return;
+
+  const box = frame.closest('.radar-box');
+  if(box) box.classList.add('iframe-reloading');
+
+  // Brief blank, then real URL — avoids prolonged black
+  frame.src = 'about:blank';
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      frame.src = url;
+      frame.dataset.lastSrc = url;
+      const loaded = ()=>{
+        iframeLastLoad.set(frame, Date.now());
+        if(box) box.classList.remove('iframe-reloading');
+      };
+      frame.addEventListener('load', loaded, {once:true});
+      // Failsafe: clear overlay even if load event doesn't fire
+      setTimeout(()=>{ if(box) box.classList.remove('iframe-reloading'); }, 15000);
+    });
+  });
+}
+
+function checkStaleIframes(){
+  if(document.hidden) return;
+  const activeId = document.querySelector('.tab-pane.active')?.id || '';
+
+  document.querySelectorAll('iframe.windy-iframe').forEach(f=>{
+    if(!f.src || f.src==='about:blank') return;
+    if(f.dataset.noStale === '1') return;           // exempt (ADSB etc.)
+    const pane = f.closest('.tab-pane');
+    if(!pane) return;
+    if(pane.id === activeId) return;                // currently visible
+    if(pane.id === 'tab-atc') return;               // ATC audio must not reload
+
+    if(!iframeLastLoad.has(f)) { iframeLastLoad.set(f, Date.now()); return; }
+    if(Date.now() - iframeLastLoad.get(f) > IFRAME_STALE_MS){
+      smoothReloadIframe(f);
+    }
+  });
+}
+setInterval(checkStaleIframes, 10 * 60 * 1000);
+
+/* Manual hover refresh button */
+function attachManualRefresh(iframe){
+  const wrap = iframe.closest('.radar-box');
+  if(!wrap || wrap.querySelector('.iframe-refresh-btn')) return;
+  const btn = document.createElement('button');
+  btn.className = 'iframe-refresh-btn';
+  btn.innerHTML = '↻';
+  btn.title = 'Refresh panel';
+  btn.addEventListener('click', e=>{
+    e.stopPropagation();
+    btn.classList.add('spinning');
+    smoothReloadIframe(iframe);
+    setTimeout(()=>btn.classList.remove('spinning'), 1200);
+  });
+  wrap.appendChild(btn);
+}
+
+window.addEventListener('load',()=>{
+  document.querySelectorAll('iframe.windy-iframe').forEach(f=>{
+    if(f.src && f.src !== 'about:blank'){
+      iframeLastLoad.set(f, Date.now());
+      f.dataset.lastSrc = f.src;
+    }
+    f.addEventListener('load',()=>{
+      iframeLastLoad.set(f, Date.now());
+      if(f.src && f.src !== 'about:blank') f.dataset.lastSrc = f.src;
+    });
+    attachManualRefresh(f);
+  });
+});
+
+/* Swap an <img> src without flashing the old image to blank.
+   Preload the new URL into a hidden Image, only swap when ready. */
+function swapImageSmooth(elId, newUrl){
+  const el = document.getElementById(elId);
+  if(!el) return;
+  const probe = new Image();
+  probe.onload  = ()=>{ el.src = newUrl; };
+  probe.onerror = ()=>{ /* keep old image */ };
+  probe.src = newUrl;
+}
+
+/* FCAST_LOCATIONS derived from AIRPORTS — single source of truth */
+const FCAST_LOCATIONS = ICAOS.map(icao=>({
+  icao,
+  name: AIRPORTS[icao].name,
+  flag: AIRPORTS[icao].flag,
+  lat:  AIRPORTS[icao].lat,
+  lon:  AIRPORTS[icao].lon,
+}));
+
+const WMO_ICON = {
+  0:'☀️',1:'🌤',2:'⛅',3:'☁️',
+  45:'🌫',48:'🌫',
+  51:'🌦',53:'🌦',55:'🌧',
+  56:'🌧',57:'🌧',
+  61:'🌧',63:'🌧',65:'⛈',
+  66:'🌧',67:'🌧',
+  71:'🌨',73:'🌨',75:'❄️',77:'❄️',
+  80:'🌦',81:'🌧',82:'⛈',
+  85:'🌨',86:'🌨',
+  95:'⛈',96:'⛈',99:'⛈'
+};
+const WMO_TEXT = {
+  0:'Clear',1:'Mostly Clear',2:'Partly Cloudy',3:'Overcast',
+  45:'Fog',48:'Rime Fog',
+  51:'Light Drizzle',53:'Drizzle',55:'Heavy Drizzle',
+  56:'Freezing Drizzle',57:'Freezing Drizzle',
+  61:'Light Rain',63:'Rain',65:'Heavy Rain',
+  66:'Freezing Rain',67:'Freezing Rain',
+  71:'Light Snow',73:'Snow',75:'Heavy Snow',77:'Snow Grains',
+  80:'Light Showers',81:'Showers',82:'Heavy Showers',
+  85:'Snow Showers',86:'Heavy Snow Showers',
+  95:'Thunderstorm',96:'TS w/ Hail',99:'Severe TS'
+};
+
+/* Animated SVG weather icons keyed by WMO code.
+   Returns inline SVG with native CSS animations — no external assets. */
+function animatedWeatherSVG(code){
+  // Sun for clear/mostly clear
+  const sun = `
+    <svg class="wx-svg wx-sun" viewBox="0 0 80 80">
+      <g class="wx-sun-rays">
+        ${[0,45,90,135,180,225,270,315].map(a=>`<line x1="40" y1="10" x2="40" y2="20" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round" transform="rotate(${a} 40 40)"/>`).join('')}
+      </g>
+      <circle cx="40" cy="40" r="13" fill="#fbbf24" filter="url(#sunBlur)"/>
+      <circle cx="40" cy="40" r="11" fill="#fde68a"/>
+      <defs><filter id="sunBlur"><feGaussianBlur stdDeviation="1.8"/></filter></defs>
+    </svg>`;
+
+  // Sun + cloud (partly cloudy)
+  const sunCloud = `
+    <svg class="wx-svg wx-sun-cloud" viewBox="0 0 80 80">
+      <g class="wx-sun-rays-small">
+        ${[0,90,180,270].map(a=>`<line x1="28" y1="14" x2="28" y2="20" stroke="#fbbf24" stroke-width="2" stroke-linecap="round" transform="rotate(${a} 28 28)"/>`).join('')}
+      </g>
+      <circle cx="28" cy="28" r="10" fill="#fbbf24" filter="url(#sc-blur)"/>
+      <circle cx="28" cy="28" r="8" fill="#fde68a"/>
+      <g class="wx-cloud-drift">
+        <ellipse cx="48" cy="50" rx="20" ry="11" fill="#cbd9ec" opacity="0.85"/>
+        <ellipse cx="38" cy="48" rx="11" ry="9" fill="#cbd9ec" opacity="0.85"/>
+        <ellipse cx="58" cy="48" rx="11" ry="8" fill="#cbd9ec" opacity="0.85"/>
+      </g>
+      <defs><filter id="sc-blur"><feGaussianBlur stdDeviation="1.5"/></filter></defs>
+    </svg>`;
+
+  // Cloud (cloudy / overcast)
+  const cloud = `
+    <svg class="wx-svg wx-cloud" viewBox="0 0 80 80">
+      <g class="wx-cloud-float">
+        <ellipse cx="40" cy="46" rx="26" ry="13" fill="#cbd9ec"/>
+        <ellipse cx="28" cy="42" rx="14" ry="11" fill="#dde6f3"/>
+        <ellipse cx="50" cy="40" rx="15" ry="12" fill="#dde6f3"/>
+      </g>
+    </svg>`;
+
+  // Rain
+  const rain = `
+    <svg class="wx-svg wx-rain" viewBox="0 0 80 80">
+      <g class="wx-cloud-float">
+        <ellipse cx="40" cy="32" rx="24" ry="11" fill="#9bafc7"/>
+        <ellipse cx="28" cy="28" rx="12" ry="9" fill="#b6c5da"/>
+        <ellipse cx="50" cy="26" rx="14" ry="10" fill="#b6c5da"/>
+      </g>
+      <g class="wx-drops">
+        <line x1="26" y1="48" x2="22" y2="62" stroke="#5ab8ff" stroke-width="2" stroke-linecap="round" class="wx-drop wx-drop-1"/>
+        <line x1="40" y1="48" x2="36" y2="62" stroke="#5ab8ff" stroke-width="2" stroke-linecap="round" class="wx-drop wx-drop-2"/>
+        <line x1="54" y1="48" x2="50" y2="62" stroke="#5ab8ff" stroke-width="2" stroke-linecap="round" class="wx-drop wx-drop-3"/>
+        <line x1="33" y1="55" x2="29" y2="69" stroke="#5ab8ff" stroke-width="2" stroke-linecap="round" class="wx-drop wx-drop-4"/>
+        <line x1="47" y1="55" x2="43" y2="69" stroke="#5ab8ff" stroke-width="2" stroke-linecap="round" class="wx-drop wx-drop-5"/>
+      </g>
+    </svg>`;
+
+  // Showers (rain + sun peek)
+  const showers = `
+    <svg class="wx-svg wx-showers" viewBox="0 0 80 80">
+      <circle cx="60" cy="22" r="9" fill="#fbbf24" opacity="0.9"/>
+      <g class="wx-cloud-float">
+        <ellipse cx="35" cy="34" rx="22" ry="11" fill="#9bafc7"/>
+        <ellipse cx="24" cy="30" rx="11" ry="9" fill="#b6c5da"/>
+        <ellipse cx="44" cy="28" rx="13" ry="10" fill="#b6c5da"/>
+      </g>
+      <g class="wx-drops">
+        <line x1="22" y1="48" x2="18" y2="60" stroke="#5ab8ff" stroke-width="2" stroke-linecap="round" class="wx-drop wx-drop-1"/>
+        <line x1="34" y1="50" x2="30" y2="62" stroke="#5ab8ff" stroke-width="2" stroke-linecap="round" class="wx-drop wx-drop-3"/>
+        <line x1="46" y1="48" x2="42" y2="60" stroke="#5ab8ff" stroke-width="2" stroke-linecap="round" class="wx-drop wx-drop-5"/>
+      </g>
+    </svg>`;
+
+  // Thunderstorm
+  const tstorm = `
+    <svg class="wx-svg wx-tstorm" viewBox="0 0 80 80">
+      <g class="wx-cloud-float">
+        <ellipse cx="40" cy="30" rx="26" ry="12" fill="#5b6980"/>
+        <ellipse cx="28" cy="26" rx="13" ry="10" fill="#7889a3"/>
+        <ellipse cx="52" cy="24" rx="15" ry="11" fill="#7889a3"/>
+      </g>
+      <g class="wx-bolt">
+        <polygon points="38,42 48,42 42,54 50,54 36,72 40,58 32,58" fill="#fbbf24" stroke="#fff" stroke-width="0.6" stroke-linejoin="round"/>
+      </g>
+      <g class="wx-drops">
+        <line x1="22" y1="48" x2="18" y2="60" stroke="#5ab8ff" stroke-width="2" stroke-linecap="round" class="wx-drop wx-drop-1"/>
+        <line x1="58" y1="48" x2="54" y2="60" stroke="#5ab8ff" stroke-width="2" stroke-linecap="round" class="wx-drop wx-drop-3"/>
+      </g>
+    </svg>`;
+
+  // Fog
+  const fog = `
+    <svg class="wx-svg wx-fog" viewBox="0 0 80 80">
+      <g>
+        <line x1="14" y1="32" x2="66" y2="32" stroke="#cbd9ec" stroke-width="4" stroke-linecap="round" class="wx-fog-line wx-fog-1"/>
+        <line x1="10" y1="42" x2="62" y2="42" stroke="#cbd9ec" stroke-width="4" stroke-linecap="round" class="wx-fog-line wx-fog-2"/>
+        <line x1="16" y1="52" x2="70" y2="52" stroke="#cbd9ec" stroke-width="4" stroke-linecap="round" class="wx-fog-line wx-fog-3"/>
+      </g>
+    </svg>`;
+
+  if(code===0||code===1) return sun;
+  if(code===2)           return sunCloud;
+  if(code===3)           return cloud;
+  if(code===45||code===48) return fog;
+  if(code>=51 && code<=57) return showers;
+  if(code===80||code===81) return showers;
+  if(code===82)            return tstorm;
+  if(code>=61 && code<=67) return rain;
+  if(code===95||code===96||code===99) return tstorm;
+  return cloud;
+}
+
+/* Build a 1-2 line written summary of the 3-day forecast.
+   Picks out the most decision-relevant features: rain, wind, heat, change. */
+/* ════════════════════════════════
+   DUST FORECAST — Open-Meteo Air Quality API (free, no key)
+   Returns dust concentration µg/m³ for the next 72 h.
+   Triggers a banner alert if any reading ≥ 50 µg/m³.
+════════════════════════════════ */
+async function loadDustForecast(){
+  try{
+    // Average across the three islands using a single representative point.
+    const url=`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=12.18&longitude=-68.96`+
+      `&hourly=dust&timezone=America%2FCuracao&forecast_days=3`;
+    const r = await fetch(url,{cache:'no-store'});
+    if(!r.ok) throw new Error('dust HTTP '+r.status);
+    const data = await r.json();
+    const hourly = data.hourly || {};
+    const times = hourly.time || [];
+    const dust  = hourly.dust || [];
+    if(!times.length || !dust.length) return;
+
+    const now = Date.now();
+    let peak = 0, peakTime = null, presentNow = 0;
+    for(let i=0;i<times.length;i++){
+      const t = new Date(times[i]).getTime();
+      const v = dust[i];
+      if(v == null) continue;
+      if(Math.abs(t - now) < 3600*1000) presentNow = v;
+      if(v > peak){ peak = v; peakTime = times[i]; }
+    }
+
+    renderDustAlert(presentNow, peak, peakTime);
+  }catch(err){
+    console.warn('[Dust] forecast failed:', err.message);
+  }
+}
+
+function renderDustAlert(now, peak, peakTime){
+  const wrap = document.getElementById('dustAlertWrap');
+  const el   = document.getElementById('dustAlert');
+  if(!wrap || !el) return;
+
+  // Thresholds (µg/m³): <20 baseline, 20-50 light, 50-100 moderate, >100 heavy
+  const presentNow = now >= 50;
+  const incoming   = peak >= 50 && !presentNow;
+
+  if(!presentNow && !incoming){
+    wrap.style.display = 'none';
+    return;
+  }
+
+  const peakDate = peakTime ? new Date(peakTime) : null;
+  const peakStr  = peakDate ? peakDate.toLocaleString('en-US',{
+    weekday:'short', hour:'2-digit', minute:'2-digit', hour12:false, timeZone:'America/Curacao'
+  }) : '—';
+
+  const level = peak >= 100 ? {cls:'dust-heavy', label:'HEAVY'} :
+                peak >= 50  ? {cls:'dust-moderate', label:'MODERATE'} :
+                              {cls:'dust-light', label:'LIGHT'};
+
+  const headline = presentNow
+    ? `Saharan dust currently affecting the islands · ${Math.round(now)} µg/m³`
+    : `Incoming Saharan dust expected · peak ${Math.round(peak)} µg/m³ around ${peakStr}`;
+
+  const advice = peak >= 100
+    ? 'Limit prolonged outdoor exertion. Sensitive groups stay indoors.'
+    : peak >= 50
+    ? 'Hazy conditions likely. Visibility reduced. Allergy sufferers take care.'
+    : '';
+
+  el.className = `dust-alert ${level.cls}`;
+  el.innerHTML = `
+    <div class="dust-alert-icon">🟫</div>
+    <div class="dust-alert-text">
+      <div class="dust-alert-hdr">
+        <span class="dust-alert-level">${level.label} DUST ${presentNow?'PRESENT':'INCOMING'}</span>
+      </div>
+      <div class="dust-alert-body">${headline}</div>
+      ${advice?`<div class="dust-alert-advice">${advice}</div>`:''}
+    </div>
+  `;
+  wrap.style.display = '';
+
+  // Trigger a soft tone the first time dust is detected (once per session)
+  if(!window._dustNotified && (presentNow || incoming)){
+    window._dustNotified = true;
+    if(typeof playAlertTone === 'function') playAlertTone();
+  }
+}
+
+/* ════════════════════════════════
+   CARIBBEAN WEATHER / AVIATION NEWS
+   One or two lines from a free news source. We use Google News
+   RSS via a CORS-friendly bridge (rss2json.com — free tier).
+   Filtered to Caribbean weather + aviation keywords.
+════════════════════════════════ */
+async function loadCaribbeanNews(){
+  const el = document.getElementById('newsContent');
+  try{
+    const query = encodeURIComponent('Caribbean weather aviation when:7d');
+    const rssUrl = `https://news.google.com/rss/search?q=${query}&hl=en&gl=US&ceid=US:en`;
+    const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
+    const r = await fetch(apiUrl,{cache:'no-store'});
+    if(!r.ok) throw new Error('news '+r.status);
+    const data = await r.json();
+    const items = (data.items||[]).slice(0,5);
+    if(!items.length){ el.textContent='No recent Caribbean weather/aviation news.'; return; }
+
+    // Pick the two most relevant — anything matching weather, hurricane, flight, airline, ATC
+    const keywords = /hurricane|tropical|storm|caribbean|cura[çc]ao|aruba|bonaire|aviation|flight|airport|atc|sigmet|weather/i;
+    const relevant = items.filter(i => keywords.test((i.title||'') + ' ' + (i.description||''))).slice(0,2);
+    const picks = relevant.length ? relevant : items.slice(0,2);
+
+    el.innerHTML = picks.map(i=>{
+      const date = i.pubDate ? new Date(i.pubDate).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '';
+      const source = i.author || (i.link ? new URL(i.link).hostname.replace('www.','') : '');
+      return `<a class="news-item" href="${i.link}" target="_blank">
+        <span class="news-date">${date}</span>
+        <span class="news-title">${i.title}</span>
+        <span class="news-src">${source}</span>
+      </a>`;
+    }).join('');
+  }catch(err){
+    el.innerHTML = `<span style="color:var(--text-dim)">News feed unavailable · <a href="https://www.nhc.noaa.gov/" target="_blank" style="color:var(--cyan);text-decoration:none;border-bottom:1px solid var(--cyan)">NHC</a> · <a href="https://aviationweather.gov/" target="_blank" style="color:var(--cyan);text-decoration:none;border-bottom:1px solid var(--cyan)">AWC</a></span>`;
+  }
+}
+
+/* ════════════════════════════════
+   FORECAST — WeatherAPI forecast.json (more accurate than Open-Meteo)
+   Data already fetched into store.api by the 5-min refresh cycle.
+   FCAST_LOCATIONS is used only for labels/coords; data comes from store.api.
+════════════════════════════════ */
+function buildForecastSummary(days, loc){
+  // days = forecast.forecastday[] from WeatherAPI
+  const today = days[0]?.day;
+  if(!today) return '';
+
+  const windKt = Math.round((today.maxwind_kph||0) * 0.539957);
+  const todayTxt = days[0]?.day?.condition?.text || '';
+  const tempHi = Math.round(today.maxtemp_c);
+  const tempLo = Math.round(today.mintemp_c);
+
+  const rainProbs = days.map(d=>d.day.daily_chance_of_rain);
+  const rainMms   = days.map(d=>d.day.totalprecip_mm);
+  const maxWinds  = days.map(d=>Math.round(d.day.maxwind_kph*0.539957));
+  const maxGustEst= maxWinds.map(w=>Math.round(w*1.3)); // WeatherAPI lacks gust daily; estimate
+  const conds     = days.map(d=>d.day.condition.text.toLowerCase());
+
+  const stormDays  = conds.filter(t=>t.includes('thunder')||t.includes('storm')).length;
+  const showerDays = conds.filter(t=>t.includes('rain')||t.includes('shower')||t.includes('drizzle')).length;
+  const wetDays    = rainProbs.filter(p=>p>=50).length;
+  const peakRain   = Math.max(...rainMms);
+  const peakHi     = Math.max(...days.map(d=>d.day.maxtemp_c));
+  const peakWind   = Math.max(...maxWinds);
+
+  const part1 = `<strong>Today:</strong> ${todayTxt.toLowerCase()}, ${tempHi}°/${tempLo}°, wind ${windKt} kt.`;
+
+  let outlook;
+  if(stormDays>0)        outlook = `Thunderstorms expected in the outlook.`;
+  else if(showerDays>=2) outlook = `Showers likely most days, peak ${peakRain.toFixed(0)} mm.`;
+  else if(wetDays===1)   outlook = `One wet day ahead (≥50% chance).`;
+  else if(peakWind>=25)  outlook = `Brisk trade winds, peaking at ${peakWind} kt.`;
+  else if(peakHi>=33)    outlook = `Hot — highs up to ${Math.round(peakHi)}°.`;
+  else                   outlook = `Mostly dry & pleasant through the period.`;
+
+  return part1 + ' ' + outlook;
+}
+
+/* Scrollable 24-hour strip from WeatherAPI hourly data on forecastday[0] */
+function buildHourlyStrip(day0, icao){
+  if(!day0?.hour?.length) return '';
+  const now = Date.now();
+  const hours = day0.hour.filter(h => new Date(h.time).getTime() >= now - 1800000); // from ~now onward
+  if(!hours.length) return '';
+
+  const maxPrecip = Math.max(1, ...hours.map(h=>h.precip_mm||0));
+  const maxWind   = Math.max(1, ...hours.map(h=>h.wind_kph*0.539957||0));
+
+  const cells = hours.slice(0,18).map(h=>{  // max 18 hours shown
+    const t     = new Date(h.time);
+    const hr    = t.getHours();
+    const lbl   = hr===0?'00h':hr===12?'12h':`${String(hr).padStart(2,'0')}`;
+    const isNow = Math.abs(t.getTime()-now) < 3600000;
+    const tempC = Math.round(h.temp_c);
+    const wmoC  = mapWeatherApiToWMO(h.condition?.code, h.condition?.text||'');
+    const rain  = h.chance_of_rain||0;
+    const precip= h.precip_mm||0;
+    const windKt= Math.round(h.wind_kph*0.539957);
+    const rainH = Math.round((precip/maxPrecip)*30);
+    const windH = Math.round((windKt/maxWind)*20);
+    const rainCol = rain>=70?'#5ab8ff':rain>=40?'#22d3ee':'rgba(34,211,238,0.3)';
+    const windCol = windKt>=25?'#f87171':windKt>=18?'#fbbf24':'rgba(34,211,238,0.5)';
+
+    return `<div class="hourly-cell${isNow?' hourly-now':''}">
+      <div class="hourly-time">${lbl}</div>
+      <div class="hourly-icon" style="width:22px;height:22px;margin:0 auto">${animatedWeatherSVG(wmoC)}</div>
+      <div class="hourly-temp">${tempC}°</div>
+      <div class="hourly-bars">
+        <div class="hourly-bar-rain" style="height:${rainH}px;background:${rainCol}" title="${rain}% · ${precip.toFixed(1)}mm"></div>
+        <div class="hourly-bar-wind" style="height:${windH}px;background:${windCol}" title="${windKt} kt"></div>
+      </div>
+      <div class="hourly-rain">${rain?rain+'%':''}</div>
+      <div class="hourly-wind" style="color:${windCol}">${windKt}</div>
+    </div>`;
+  }).join('');
+
+  return `<div class="hourly-strip-wrap">
+    <div class="hourly-strip-lbl">Next 18 hours</div>
+    <div class="hourly-strip" id="hourly-${icao}">${cells}</div>
+  </div>`;
+}
+
+async function loadForecast(){
+  forecastLoaded = true;
+  const container = document.getElementById('forecast-content');
+  setBadge('fcastBadge','LOADING','loading');
+
+  loadDustForecast();
+  loadCaribbeanNews();
+
+  try{
+    // Fetch WeatherAPI forecast.json directly for all 3 islands in parallel.
+    // This is independent of the store.api cycle — forecast always gets fresh data.
+    const results = await Promise.all(FCAST_LOCATIONS.map(async loc=>{
+      const url = PROXY_BASE
+        ? `${PROXY_BASE}/wx?q=${encodeURIComponent(AIRPORTS[loc.icao]?.q||loc.icao)}&days=3&aqi=yes&alerts=yes`
+        : `https://api.weatherapi.com/v1/forecast.json?key=${WX_API_KEY}&q=${encodeURIComponent(AIRPORTS[loc.icao]?.q||loc.icao)}&days=3&aqi=yes&alerts=yes`;
+      const res = await fetch(url, {cache:'no-store'});
+      if(!res.ok) throw new Error(`WeatherAPI ${loc.icao}: HTTP ${res.status}`);
+      const data = await res.json();
+      // Also update store.api so Weather tab stays in sync
+      store.api[loc.icao] = data;
+      if(!data.forecast?.forecastday) throw new Error(`${loc.icao}: no forecastday in response`);
+      return { loc, days: data.forecast.forecastday, aqi: data.current?.air_quality, alerts: data.alerts?.alert||[] };
+    }));
+
+    let html = '';
+    results.forEach(({loc, days, aqi, alerts})=>{
+      // Temp range across 3 days for proportional bar
+      const allHi = days.map(d=>d.day.maxtemp_c);
+      const allLo = days.map(d=>d.day.mintemp_c);
+      const tMin  = Math.min(...allLo) - 1;
+      const tMax  = Math.max(...allHi) + 1;
+      const tSpan = tMax - tMin;
+
+      const aqiEpa = aqi?.['us-epa-index'] || 0;
+      const aqiCol = [,'#4ade80','#a3e635','#fbbf24','#fb923c','#f87171','#e879f9'][aqiEpa]||'var(--text-dim)';
+      const aqiLbls= ['—','Good','Moderate','Unhlthy (Sen.)','Unhealthy','Very Unhlthy','Hazardous'];
+      const aqiL   = aqiLbls[aqiEpa]||'—';
+
+      const alertHtml = alerts.length
+        ? `<div class="wxapi-alert" style="margin:8px 18px">${alerts.map(a=>`<div class="wxapi-alert-item">⚠️ <strong>${a.event||'Alert'}</strong>: ${a.headline||''}</div>`).join('')}</div>`
+        : '';
+
+      let dayCards = '';
+      days.forEach((d,i)=>{
+        const dt      = new Date(d.date+'T12:00:00');
+        const dayName = i===0?'Today':i===1?'Tomorrow':dt.toLocaleDateString('en-US',{weekday:'long'});
+        const dateStr = dt.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+        const cond    = d.day.condition;
+        const uv      = d.day.uv;
+        const uvC     = uvCol(uv);
+        const uvL     = uvLbl(uv);
+        const wmoC    = mapWeatherApiToWMO(cond.code, cond.text);
+        const tempHi  = Math.round(d.day.maxtemp_c);
+        const tempLo  = Math.round(d.day.mintemp_c);
+        const windKt  = Math.round(d.day.maxwind_kph * 0.539957);
+        const rainPct = d.day.daily_chance_of_rain;
+        const rainMm  = d.day.totalprecip_mm;
+        const vis     = d.day.avgvis_km;
+        const hum     = d.day.avghumidity;
+
+        const sunrise = d.astro?.sunrise || '—';
+        const sunset  = d.astro?.sunset  || '—';
+
+        // Representative wind direction from noon hour (hour 12) if available
+        const noonHour = d.hour?.find(h=> new Date(h.time).getHours()===12 );
+        const windDeg  = noonHour?.wind_degree ?? 0;
+        const windToDeg= (windDeg + 180) % 360;
+        const windCard = ['N','NE','E','SE','S','SW','W','NW'][Math.round((windDeg%360)/45)%8];
+        const arrowLen = Math.min(27, 10 + windKt*0.6);
+
+        const loFrac   = ((tempLo - tMin) / tSpan) * 100;
+        const hiFrac   = ((tempHi - tMin) / tSpan) * 100;
+        const rainCol  = rainPct>=70?'#5ab8ff':rainPct>=40?'#22d3ee':rainPct>=20?'#9bd4ff':'var(--text-dim)';
+        const windCol  = windKt>=25?'#f87171':windKt>=18?'#fbbf24':'#22d3ee';
+
+        dayCards += `<div class="fcast-day" style="--day-delay:${i*0.08}s">
+          <div class="fcast-day-hdr">
+            <div>
+              <div class="fcast-day-name">${dayName}</div>
+              <div class="fcast-day-date">${dateStr}</div>
+            </div>
+            <div class="fcast-icon-big">${animatedWeatherSVG(wmoC)}</div>
+          </div>
+
+          <div class="fcast-cond-row">
+            <span class="fcast-cond-text">${cond.text}</span>
+            <span class="fcast-aqi-badge" style="color:${aqiCol};border-color:${aqiCol}44;background:${aqiCol}11">AQI ${aqiL}</span>
+          </div>
+
+          <div class="fcast-temp-section">
+            <span class="fcast-temp-lo-val">${tempLo}°</span>
+            <div class="fcast-temp-bar">
+              <div class="fcast-temp-bar-fill" style="left:${loFrac}%;width:${hiFrac-loFrac}%"></div>
+              <div class="fcast-temp-marker fcast-temp-marker-lo" style="left:${loFrac}%"></div>
+              <div class="fcast-temp-marker fcast-temp-marker-hi" style="left:${hiFrac}%"></div>
+            </div>
+            <span class="fcast-temp-hi-val">${tempHi}°</span>
+          </div>
+
+          <div class="fcast-bar-row">
+            <span class="fcast-bar-icon" style="color:${rainCol}">💧</span>
+            <div class="fcast-bar-track">
+              <div class="fcast-bar-fill ${rainPct>=60?'animated':''}" style="width:${rainPct}%;background:linear-gradient(90deg,#22d3ee,${rainCol})"></div>
+            </div>
+            <span class="fcast-bar-val" style="color:${rainCol}">${rainPct}%</span>
+            <span class="fcast-bar-sub">${rainMm.toFixed(1)} mm</span>
+          </div>
+
+          <div class="fcast-meter-row">
+            <div class="fcast-meter">
+              <svg class="fcast-wind-compass" viewBox="0 0 70 70" style="--arrow-deg:${windToDeg}deg;--arrow-color:${windCol}">
+                <circle cx="35" cy="35" r="30" fill="none" stroke="rgba(34,211,238,0.18)" stroke-width="1"/>
+                <circle cx="35" cy="35" r="22" fill="none" stroke="rgba(34,211,238,0.08)" stroke-width="1" stroke-dasharray="2 4"/>
+                <text x="35" y="11" text-anchor="middle" font-size="6" fill="rgba(155,212,255,0.5)" font-family="monospace">N</text>
+                <g class="fcast-wind-rotor">
+                  <line x1="35" y1="35" x2="35" y2="${35-arrowLen}" stroke="${windCol}" stroke-width="2.5" stroke-linecap="round"/>
+                  <polygon points="35,${35-arrowLen-5} 32,${35-arrowLen+2} 38,${35-arrowLen+2}" fill="${windCol}"/>
+                </g>
+                <circle cx="35" cy="35" r="2.5" fill="${windCol}"/>
+              </svg>
+              <div class="fcast-meter-lbl">Wind to</div>
+              <div class="fcast-meter-val" style="color:${windCol}">${windKt} <span style="font-size:.5rem;opacity:.7">${windCard}</span></div>
+              <div class="fcast-meter-sub">max kt</div>
+            </div>
+
+            <div class="fcast-meter">
+              <svg class="fcast-uv-gauge" viewBox="0 0 70 70">
+                <path d="M 12 50 A 23 23 0 0 1 58 50" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="6" stroke-linecap="round"/>
+                <path d="M 12 50 A 23 23 0 0 1 58 50" fill="none" stroke="${uvC}" stroke-width="6" stroke-linecap="round" stroke-dasharray="${Math.min(uv,11)/11*72.3} 100" style="filter:drop-shadow(0 0 6px ${uvC})"/>
+                <text x="35" y="46" text-anchor="middle" font-size="14" fill="${uvC}" font-weight="700" font-family="var(--display),sans-serif">${uv.toFixed(1)}</text>
+              </svg>
+              <div class="fcast-meter-lbl">UV</div>
+              <div class="fcast-meter-val" style="color:${uvC}">${uvL}</div>
+              <div class="fcast-meter-sub">Vis ${vis} km</div>
+            </div>
+          </div>
+
+          <div class="fcast-sun-row">
+            <span class="fcast-sun-time">↑ ${sunrise}</span>
+            <svg class="fcast-sun-arc" viewBox="0 0 100 28">
+              <path d="M 4 26 Q 50 -10 96 26" fill="none" stroke="rgba(251,191,36,0.18)" stroke-width="1.5" stroke-dasharray="2 3"/>
+              <path d="M 4 26 Q 50 -10 96 26" fill="none" stroke="url(#sunGradF-${loc.icao}-${i})" stroke-width="2"/>
+              <defs>
+                <linearGradient id="sunGradF-${loc.icao}-${i}" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stop-color="#fb923c" stop-opacity="0.4"/>
+                  <stop offset="50%" stop-color="#fbbf24"/>
+                  <stop offset="100%" stop-color="#fb923c" stop-opacity="0.4"/>
+                </linearGradient>
+                <filter id="sunGlowF"><feGaussianBlur stdDeviation="1.2"/></filter>
+              </defs>
+              <circle cx="50" cy="2" r="3.5" fill="#fbbf24" filter="url(#sunGlowF)">
+                <animate attributeName="r" values="3.5;4.2;3.5" dur="2s" repeatCount="indefinite"/>
+              </circle>
+            </svg>
+            <span class="fcast-sun-time">${sunset} ↓</span>
+          </div>
+          <div class="fcast-sun-len">RH ${hum}% · Vis ${vis} km</div>
+        </div>`;
+      });
+
+      html += `<div class="fcast-island">
+        <div class="fcast-island-hdr">
+          <span class="fcast-flag">${loc.flag}</span>
+          <div style="flex:1;min-width:0">
+            <div class="fcast-name">${loc.name}</div>
+            <div class="fcast-sub">${loc.icao} · WeatherAPI · ${loc.lat.toFixed(2)}°, ${loc.lon.toFixed(2)}°</div>
+          </div>
+          <div class="fcast-summary">${buildForecastSummary(days, loc)}</div>
+        </div>
+        ${alertHtml}
+        ${buildHourlyStrip(days[0], loc.icao)}
+        <div class="fcast-days">${dayCards}</div>
+      </div>`;
+    });
+
+    container.innerHTML = html;
+    window._fcastLastRender = Date.now();
+    setBadge('fcastBadge','LIVE');
+    const ts = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'America/Curacao'});
+    const el = document.getElementById('fcastUpdated');
+    if(el) el.textContent = `Updated ${ts} AST`;
+
+  }catch(e){
+    container.innerHTML = `<div style="padding:20px;font-family:var(--mono);font-size:.6rem;color:#f87171;text-align:center">Forecast load failed: ${e.message}</div>`;
+    setBadge('fcastBadge','ERROR','error');
+    forecastLoaded = false;
+  }
+}
+
+/* ════════════════════════════════
+   MARINE — Open-Meteo Marine API (free, no key)
+════════════════════════════════ */
+function getBeachAdvice(waveM, windKt, gustKt, weatherCode){
+  // Conservative advice for ABC island swimmers / small craft.
+  if(weatherCode>=95 || waveM>=2.5 || gustKt>=35) return {cls:'adv-danger', icon:'⛔', text:'NOT SAFE — stay ashore'};
+  if(waveM>=1.5 || windKt>=22 || gustKt>=28)      return {cls:'adv-rough',  icon:'⚠️',  text:'Rough — small craft caution'};
+  if(waveM>=0.8 || windKt>=18)                    return {cls:'adv-fair',   icon:'🟡', text:'Fair — choppy, exp. swimmers ok'};
+  return                                                  {cls:'adv-good',   icon:'✅', text:'Good — beach & sea OK'};
+}
+function getCloudHeight(metar){
+  // Pull lowest cloud base from latest METAR if available.
+  const clouds=metar?.clouds||[];
+  if(!clouds.length) return null;
+  const lowest=clouds.reduce((m,c)=>c.base_feet_agl<m?c.base_feet_agl:m, Infinity);
+  if(lowest===Infinity) return null;
+  return { ft:lowest, m:Math.round(lowest*0.3048) };
+}
+
+/* Animated SVG wave art — three nested sine curves bobbing in phase.
+   Color and amplitude scale with wave height. */
+function animatedWaveSVG(waveM, color){
+  const amp = Math.min(8, 2 + waveM * 2.5);
+  return `<svg class="wave-svg" viewBox="0 0 100 50" preserveAspectRatio="none">
+    <defs>
+      <linearGradient id="wgrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="${color}" stop-opacity="0.15"/>
+        <stop offset="100%" stop-color="${color}" stop-opacity="0.5"/>
+      </linearGradient>
+    </defs>
+    <path class="wave-back" d="M 0 30 Q 25 ${30-amp*0.7} 50 30 T 100 30 V 50 H 0 Z"
+          fill="url(#wgrad)" opacity="0.5" style="--amp:${amp*0.7}"/>
+    <path class="wave-mid" d="M 0 32 Q 25 ${32-amp} 50 32 T 100 32 V 50 H 0 Z"
+          fill="url(#wgrad)" opacity="0.7" style="--amp:${amp}"/>
+    <path class="wave-front" d="M 0 35 Q 25 ${35-amp*1.2} 50 35 T 100 35 V 50 H 0 Z"
+          fill="${color}" opacity="0.55" style="--amp:${amp*1.2}"/>
+  </svg>`;
+}
+
+async function loadMarine(){
+  marineLoaded=true;
+  const container=document.getElementById('marine-content');
+  setBadge('marineBadge','LOADING','loading');
+
+  try{
+    const results=await Promise.all(FCAST_LOCATIONS.map(async loc=>{
+      const marineUrl=`https://marine-api.open-meteo.com/v1/marine?latitude=${loc.lat}&longitude=${loc.lon}`+
+        `&current=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_direction,swell_wave_period,wind_wave_height,wind_wave_period`+
+        `&hourly=wave_height,swell_wave_height,wave_period`+
+        `&timezone=America%2FCuracao&forecast_days=1`;
+      const wxUrl=`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}`+
+        `&current=temperature_2m,wind_speed_10m,wind_gusts_10m,wind_direction_10m,weather_code,visibility`+
+        `&timezone=America%2FCuracao`;
+      const [marineR,wxR]=await Promise.all([fetch(marineUrl,{cache:'no-store'}),fetch(wxUrl,{cache:'no-store'})]);
+      const marine = marineR.ok ? await marineR.json() : null;
+      const wx     = wxR.ok     ? await wxR.json()     : null;
+      return { loc, marine, wx, metar: store.metar[loc.icao] };
+    }));
+
+    let html='';
+    results.forEach(({loc,marine,wx,metar})=>{
+      const m=marine?.current||{};
+      const w=wx?.current||{};
+      const waveM   = m.wave_height ?? 0;
+      const waveFt  = (waveM*3.281).toFixed(1);
+      const swellM  = m.swell_wave_height ?? 0;
+      const swellFt = (swellM*3.281).toFixed(1);
+      const swellP  = m.swell_wave_period ?? 0;
+      const wavePeriod = m.wave_period ?? 0;
+      const wd=m.wave_direction ?? 0;
+      const wdir=['N','NE','E','SE','S','SW','W','NW'][Math.round((wd%360)/45)%8];
+      const sd=m.swell_wave_direction ?? 0;
+      const sdir=['N','NE','E','SE','S','SW','W','NW'][Math.round((sd%360)/45)%8];
+
+      const windKt = w.wind_speed_10m ? Math.round(w.wind_speed_10m*0.539957) : 0;
+      const gustKt = w.wind_gusts_10m ? Math.round(w.wind_gusts_10m*0.539957) : 0;
+      const wxWindDir=w.wind_direction_10m;
+      const wxWindCard=wxWindDir!==undefined?['N','NE','E','SE','S','SW','W','NW'][Math.round((wxWindDir%360)/45)%8]:'';
+
+      const cloud=getCloudHeight(metar);
+      const cloudStr = cloud ? `${cloud.ft} ft / ${cloud.m} m` : 'CAVOK';
+      const visMtr = metar?.visibility?.meters;
+      const visStr = visMtr!==undefined ? (visMtr>=9999?'>10 km':(visMtr/1000).toFixed(1)+' km') : '—';
+
+      const advice=getBeachAdvice(waveM, windKt, gustKt, w.weather_code);
+
+      // Wave/swell visualization sizing (clamped)
+      const waveBarPct  = Math.min(100, (waveM  / 4) * 100);
+      const swellBarPct = Math.min(100, (swellM / 4) * 100);
+      const windBarPct  = Math.min(100, (windKt / 35) * 100);
+
+      // Direction arrows point downwind/down-swell (where waves go)
+      const wdTo = (wd + 180) % 360;
+      const sdTo = (sd + 180) % 360;
+      const windToDeg = (wxWindDir!==undefined ? wxWindDir + 180 : 0) % 360;
+
+      // Wave color intensity
+      const waveCol = waveM>=2.5?'#f87171':waveM>=1.5?'#fbbf24':waveM>=0.8?'#22d3ee':'#5ab8ff';
+
+      html+=`<div class="marine-island">
+        <div class="marine-island-hdr">
+          <span class="fcast-flag">${loc.flag}</span>
+          <div style="flex:1;min-width:0">
+            <div class="fcast-name">${loc.name}</div>
+            <div class="fcast-sub">${loc.icao} · Marine + Aviation</div>
+          </div>
+          <div class="marine-wave-art">${animatedWaveSVG(waveM, waveCol)}</div>
+          <span class="marine-advice ${advice.cls}">
+            <span class="marine-icon">${advice.icon}</span>${advice.text}
+          </span>
+        </div>
+
+        <!-- Wave / Swell / Wind bars row -->
+        <div class="marine-bars">
+          <div class="marine-bar">
+            <span class="marine-bar-icon">🌊</span>
+            <div class="marine-bar-info">
+              <div class="marine-bar-row1"><span class="marine-bar-lbl">Waves</span><span class="marine-bar-val" style="color:${waveCol}">${waveM.toFixed(1)} m / ${waveFt} ft</span></div>
+              <div class="marine-bar-track"><div class="marine-bar-fill animated" style="width:${waveBarPct}%;background:linear-gradient(90deg,#5ab8ff,${waveCol})"></div></div>
+              <div class="marine-bar-sub">Period ${wavePeriod.toFixed(0)} s · From ${pad(Math.round(wd))}° ${wdir}</div>
+            </div>
+          </div>
+
+          <div class="marine-bar">
+            <span class="marine-bar-icon">〰️</span>
+            <div class="marine-bar-info">
+              <div class="marine-bar-row1"><span class="marine-bar-lbl">Swell</span><span class="marine-bar-val">${swellM.toFixed(1)} m / ${swellFt} ft</span></div>
+              <div class="marine-bar-track"><div class="marine-bar-fill animated" style="width:${swellBarPct}%;background:linear-gradient(90deg,#22d3ee,#9bd4ff)"></div></div>
+              <div class="marine-bar-sub">Period ${swellP.toFixed(0)} s · From ${pad(Math.round(sd))}° ${sdir}</div>
+            </div>
+          </div>
+
+          <div class="marine-bar">
+            <span class="marine-bar-icon">💨</span>
+            <div class="marine-bar-info">
+              <div class="marine-bar-row1"><span class="marine-bar-lbl">Wind</span><span class="marine-bar-val">${windKt} kt · G${gustKt}</span></div>
+              <div class="marine-bar-track"><div class="marine-bar-fill animated" style="width:${windBarPct}%;background:linear-gradient(90deg,#22d3ee,${gustKt>=22?'#fbbf24':'#22d3ee'},${gustKt>=28?'#f87171':'#22d3ee'})"></div></div>
+              <div class="marine-bar-sub">${wxWindCard||'—'} · From ${wxWindDir!==undefined?pad(wxWindDir)+'°':'—'}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Compact aviation/sea grid -->
+        <div class="marine-grid">
+          <div class="marine-cell"><div class="marine-cell-lbl">Sea State</div><div class="marine-cell-val" style="font-size:.78rem">${waveM<0.5?'Calm':waveM<1.25?'Slight':waveM<2.5?'Moderate':waveM<4?'Rough':'Very Rough'}</div></div>
+          <div class="marine-cell"><div class="marine-cell-lbl">Visibility</div><div class="marine-cell-val">${visStr}</div></div>
+          <div class="marine-cell"><div class="marine-cell-lbl">Cloud Base</div><div class="marine-cell-val" style="font-size:.78rem">${cloudStr}</div></div>
+          <div class="marine-cell"><div class="marine-cell-lbl">Air Temp</div><div class="marine-cell-val">${w.temperature_2m?.toFixed(0)||'—'}°C</div></div>
+          <div class="marine-cell"><div class="marine-cell-lbl">Conditions</div><div class="marine-cell-val" style="font-size:.65rem">${WMO_TEXT[w.weather_code]||'—'}</div></div>
+          <div class="marine-cell"><div class="marine-cell-lbl">Source</div><div class="marine-cell-val" style="font-size:.55rem">Open-Meteo · ECMWF</div></div>
+        </div>
+
+        <div class="marine-summary">
+          <div class="marine-summary-row">
+            <span class="lbl">Beach</span>${
+              waveM<0.5 ? 'Calm seas — excellent for swimming, kayaking, paddleboarding all day.' :
+              waveM<1.0 ? 'Light chop — good for swimming. Beginners ok in calmer bays.' :
+              waveM<1.5 ? 'Moderate chop — strong swimmers only. Watch for currents at exposed beaches.' :
+              waveM<2.5 ? 'Rough — sheltered bays only. No open-water swimming.' :
+                          'Dangerous surf — stay out of the water.'
+            }
+          </div>
+          <div class="marine-summary-row">
+            <span class="lbl">Boat</span>${
+              (windKt<15 && waveM<1.0) ? 'Excellent for small craft. Light winds, gentle seas.' :
+              (windKt<22 && waveM<1.5) ? 'Acceptable for small craft, expect moderate chop. Reef sails.' :
+              (windKt<28 && waveM<2.5) ? 'Small craft advisory. Experienced sailors only.' :
+                                         'Small craft warning — remain in port.'
+            }
+          </div>
+        </div>
+      </div>`;
+    });
+    container.innerHTML=html;
+    window._marineLastRender = Date.now();
+    setBadge('marineBadge','LIVE');
+  }catch(e){
+    container.innerHTML=`<div style="padding:20px;font-family:var(--mono);font-size:.6rem;color:#f87171;text-align:center">Marine load failed: ${e.message}</div>`;
+    setBadge('marineBadge','ERROR','error');
+    marineLoaded=false;
+  }
+}
+// Refresh forecast every 30 min when its tab is open
+setInterval(()=>{
+  const active=document.querySelector('.tab-pane.active');
+  if(active && active.id==='tab-forecast') loadForecast();
+}, 30 * 60 * 1000);
+
+// Refresh marine every 30 min when its tab is open
+setInterval(()=>{
+  const active=document.querySelector('.tab-pane.active');
+  if(active && active.id==='tab-marine') loadMarine();
+}, 30 * 60 * 1000);
+
+/* No more page reload — ATC audio must stay alive.
+   Iframes are watched separately and only reloaded if they go stale
+   AND the user is not currently on that tab AND it's not the ATC tab. */
+
+/* ════════════════════════════════════════════════════════
+   PROGRESSIVE WEB APP (Service Worker)
+   Inline service worker via Blob URL — caches the dashboard
+   shell so it loads instantly offline. Live data still goes
+   over the network when available.
+
+   CAVEAT: Service workers only register over HTTPS or localhost.
+   If you open this file with file:// it'll skip registration
+   silently — that's expected and not a bug.
+════════════════════════════════════════════════════════ */
+(function setupPWA(){
+  if(!('serviceWorker' in navigator)) return;
+  if(location.protocol !== 'https:' && location.hostname !== 'localhost') return;
+
+  const swCode = `
+    const CACHE = 'atc-dashboard-v1';
+    const SHELL = [self.location.origin + '/', self.registration.scope];
+
+    self.addEventListener('install', e => {
+      self.skipWaiting();
+      e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL).catch(()=>{})));
+    });
+
+    self.addEventListener('activate', e => {
+      e.waitUntil(
+        caches.keys().then(keys =>
+          Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+        ).then(() => self.clients.claim())
+      );
+    });
+
+    /* Strategy:
+       - HTML / shell  → network-first, fall back to cache
+       - API / data    → network-only, never cache (must be fresh)
+       - Static assets → cache-first, fall back to network */
+    self.addEventListener('fetch', e => {
+      const url = new URL(e.request.url);
+      if(e.request.method !== 'GET') return;
+
+      // Never cache API calls — they must be live
+      const isAPI =
+        url.hostname.includes('checkwx.com') ||
+        url.hostname.includes('weatherapi.com') ||
+        url.hostname.includes('open-meteo.com') ||
+        url.hostname.includes('aviationweather.gov') ||
+        url.hostname.includes('corsproxy.io') ||
+        url.hostname.includes('liveatc.net') ||
+        url.hostname.includes('nesdis.noaa.gov') ||
+        url.hostname.includes('weather.gov') ||
+        url.hostname.includes('nhc.noaa.gov') ||
+        url.hostname.includes('synopticdata.com') ||
+        url.hostname.includes('rss2json.com') ||
+        url.hostname.includes('air-quality-api.open-meteo.com');
+      if(isAPI) return; // let it pass through normally
+
+      // HTML shell — network-first
+      if(e.request.mode === 'navigate' || e.request.destination === 'document'){
+        e.respondWith(
+          fetch(e.request).then(res => {
+            const copy = res.clone();
+            caches.open(CACHE).then(c => c.put(e.request, copy));
+            return res;
+          }).catch(() => caches.match(e.request))
+        );
+        return;
+      }
+
+      // Everything else — cache-first
+      e.respondWith(
+        caches.match(e.request).then(cached =>
+          cached || fetch(e.request).then(res => {
+            if(res.ok && res.type === 'basic'){
+              const copy = res.clone();
+              caches.open(CACHE).then(c => c.put(e.request, copy));
+            }
+            return res;
+          })
+        )
+      );
+    });
+  `;
+  const blob = new Blob([swCode], {type:'application/javascript'});
+  const swURL = URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swURL).then(()=>{
+    console.log('[PWA] Service worker registered');
+  }).catch(err=>{
+    console.warn('[PWA] SW registration failed:',err.message);
+  });
+})();
+
+/* "Install app" prompt button */
+let deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  showInstallButton();
+});
+function showInstallButton(){
+  if(document.getElementById('installBtn')) return;
+  const btn = document.createElement('button');
+  btn.id = 'installBtn';
+  btn.innerHTML = '⬇ Install';
+  btn.title = 'Install as an app';
+  btn.className = 'install-btn';
+  btn.addEventListener('click', async () => {
+    if(!deferredInstallPrompt) return;
+    deferredInstallPrompt.prompt();
+    await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    btn.remove();
+  });
+  // Add it next to the night/lock buttons in the header
+  const actions = document.querySelector('.header-actions');
+  if(actions) actions.insertBefore(btn, actions.firstChild);
+}
+window.addEventListener('appinstalled', ()=>{
+  const b=document.getElementById('installBtn'); if(b) b.remove();
+});
+
+/* ════════════════════════════════════════════════════════
+   STORM-TRACKING ALERTS
+   Watches NHC tropical-weather data; if a system is within
+   ALERT_RADIUS_KM of any ABC island, Ops tab pulses red and
+   a soft alert tone plays. Re-check every 30 min.
+
+   Source: NHC's CurrentStorms.json — public, no key, CORS-OK.
+════════════════════════════════════════════════════════ */
+const ALERT_RADIUS_KM = 1500;          // alert if any storm within 1500 km
+const ABC_CENTER = { lat:12.3, lon:-69.0 };
+let stormAlertActive = false;
+let lastAlertedStorms = new Set();
+
+function haversineKm(a, b){
+  const R = 6371;
+  const dLat = (b.lat-a.lat) * Math.PI/180;
+  const dLon = (b.lon-a.lon) * Math.PI/180;
+  const lat1 = a.lat * Math.PI/180;
+  const lat2 = b.lat * Math.PI/180;
+  const x = Math.sin(dLat/2)**2 + Math.sin(dLon/2)**2 * Math.cos(lat1)*Math.cos(lat2);
+  return 2 * R * Math.asin(Math.sqrt(x));
+}
+
+async function checkStormAlerts(){
+  try{
+    // NHC publishes active storms publicly. Use cors-friendly endpoint.
+    const r = await fetch('https://www.nhc.noaa.gov/CurrentStorms.json',{cache:'no-store'});
+    if(!r.ok) return;
+    const data = await r.json();
+    const storms = data.activeStorms || [];
+
+    const nearby = [];
+    for(const s of storms){
+      const lat = parseFloat(s.lat);
+      const lon = parseFloat(s.lon);
+      if(isNaN(lat) || isNaN(lon)) continue;
+      const dist = haversineKm(ABC_CENTER, {lat, lon});
+      if(dist <= ALERT_RADIUS_KM){
+        nearby.push({
+          name: s.name || s.id || 'System',
+          id:   s.id   || s.name,
+          lat, lon,
+          dist: Math.round(dist),
+          classification: s.classification || s.type || 'system',
+          intensity: s.intensity || s.intensityMPH || ''
+        });
+      }
+    }
+
+    updateStormAlertUI(nearby);
+  } catch(err){
+    console.warn('[Storm] alert check failed:',err.message);
+  }
+}
+
+function updateStormAlertUI(storms){
+  const opsTab = document.querySelector('.tab-btn[data-tab="forecast"]');
+  const opsTabPane = document.getElementById('tab-forecast');
+
+  if(storms.length === 0){
+    stormAlertActive = false;
+    opsTab?.classList.remove('storm-alert');
+    document.getElementById('stormBanner')?.remove();
+    lastAlertedStorms = new Set();
+    return;
+  }
+
+  // Anything new? Then play a soft alert tone.
+  const currentIds = new Set(storms.map(s=>s.id));
+  const newStorms = [...currentIds].filter(id => !lastAlertedStorms.has(id));
+  if(newStorms.length > 0 && stormAlertActive === false){
+    playAlertTone();
+  }
+  lastAlertedStorms = currentIds;
+  stormAlertActive = true;
+  opsTab?.classList.add('storm-alert');
+
+  // Banner inside the Ops pane
+  let banner = document.getElementById('stormBanner');
+  if(!banner){
+    banner = document.createElement('div');
+    banner.id = 'stormBanner';
+    banner.className = 'storm-banner';
+    const layout = opsTabPane?.querySelector('.layout');
+    if(layout) layout.insertBefore(banner, layout.firstChild);
+  }
+  banner.innerHTML = `
+    <div class="storm-banner-inner">
+      <div class="storm-banner-pulse"></div>
+      <div class="storm-banner-icon">⚠️</div>
+      <div class="storm-banner-text">
+        <div class="storm-banner-hdr">${storms.length === 1 ? 'TROPICAL SYSTEM IN RANGE' : storms.length + ' SYSTEMS IN RANGE'}</div>
+        <div class="storm-banner-list">
+          ${storms.map(s => `<span class="storm-chip">
+            <strong>${s.name}</strong>
+            <span class="storm-meta">${s.classification} · ${s.dist} km</span>
+          </span>`).join('')}
+        </div>
+      </div>
+      <a href="https://www.nhc.noaa.gov/" target="_blank" class="storm-banner-link">NHC ↗</a>
+    </div>
+  `;
+}
+
+/* Soft 2-tone alert chime via WebAudio (no external file needed). */
+function playAlertTone(){
+  try{
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const now = ctx.currentTime;
+    [880, 1175].forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.frequency.value = freq;
+      osc.type = 'sine';
+      gain.gain.setValueAtTime(0, now + i*0.4);
+      gain.gain.linearRampToValueAtTime(0.18, now + i*0.4 + 0.05);
+      gain.gain.linearRampToValueAtTime(0,    now + i*0.4 + 0.35);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(now + i*0.4);
+      osc.stop( now + i*0.4 + 0.4);
+    });
+  }catch(err){
+    console.warn('[Storm] alert tone failed:', err.message);
+  }
+}
+
+// Run once after first paint, then every 30 min
+setTimeout(checkStormAlerts, 4000);
+setInterval(checkStormAlerts, 30 * 60 * 1000);
+
+/* Wind arrows are built inline within each island card. */
+
+</script>
+
+</body>
+</html>

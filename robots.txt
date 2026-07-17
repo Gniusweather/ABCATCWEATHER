@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# dashboard.html is excluded via its noindex meta tag — do NOT Disallow it
+# here: blocking the crawl would stop Google from ever seeing the noindex.
+
+Sitemap: https://curacaoweatheratc.uk/sitemap.xml
