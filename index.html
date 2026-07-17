@@ -5111,7 +5111,7 @@ lockToggle.onclick=()=>{ setLock(document.body.dataset.locked!=='true'); };
 ════════════════════════════════ */
 /* View state for the radar tile overlay — mirrors the ADS-B iframe view.
    Updated whenever we learn a new position (saved URL, postMessage, src change). */
-var _mapView = { lat: 12.35, lon: -69.50, zoom: 8 };
+var _mapView = { lat: 12.30, lon: -69.10, zoom: 9 };
 function setMapViewFromUrl(u){
   try{
     const url  = new URL(u);
@@ -5131,8 +5131,8 @@ function setMapViewFromUrl(u){
   const frame    = document.getElementById('adsbFrame');
   const saveBtn  = document.getElementById('adsbSaveBtn');
   const BASE_URL = 'https://globe.adsbexchange.com/';
-  const _mobileZoom = window.innerWidth <= 680 ? 7 : window.innerWidth <= 1000 ? 7.5 : 8;
-  const DEFAULT  = `${BASE_URL}?lat=12.35&lon=-69.50&zoom=${_mobileZoom}`;
+  const _mobileZoom = window.innerWidth <= 680 ? 8 : window.innerWidth <= 1000 ? 8.5 : 9;
+  const DEFAULT  = `${BASE_URL}?lat=12.30&lon=-69.10&zoom=${_mobileZoom}`;
 
   let saved = localStorage.getItem(LS_KEY);
   // Discard any saved URL from the old airplanes.live provider
