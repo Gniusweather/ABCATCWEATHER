@@ -4490,7 +4490,7 @@ body.night .tab-btn.active{
 
         <!-- Curaçao pair -->
         <div class="atc-pair-row">
-          <div class="atc-player" data-stream="https://d.liveatc.net/tncc3_twr">
+          <div class="atc-player" data-stream="https://d.liveatc.net/tncc3_twr" data-stream-alt="https://d.liveatc.net/tncc">
             <button class="atc-play-btn" aria-label="Play TNCC TWR"><span class="atc-play-icon">▶</span></button>
             <div class="atc-info">
               <div class="atc-label"><span class="atc-flag">🇨🇼</span> TNCC · Hato Tower</div>
@@ -4506,7 +4506,7 @@ body.night .tab-btn.active{
             </div>
           </div>
 
-          <div class="atc-player" data-stream="https://d.liveatc.net/tncc3_rdr1">
+          <div class="atc-player" data-stream="https://d.liveatc.net/tncc1" data-stream-alt="https://d.liveatc.net/tncc">
             <button class="atc-play-btn" aria-label="Play TNCC APP"><span class="atc-play-icon">▶</span></button>
             <div class="atc-info">
               <div class="atc-label"><span class="atc-flag">🇨🇼</span> TNCC · Hato Approach / Radar</div>
@@ -5226,7 +5226,12 @@ function setMapViewFromUrl(u){
    by the iframe-keep-alive system.
 ════════════════════════════════ */
 document.querySelectorAll('.atc-player').forEach(card=>{
-  const url      = card.dataset.stream;
+  // Primary mount plus optional comma-separated alternates (data-stream-alt).
+  // On repeated failures the player cycles to the next mount, so a down feed
+  // falls back to a sister feed instead of dead-ending on "Error".
+  const urls     = [card.dataset.stream, ...(card.dataset.streamAlt||'').split(',')]
+                     .map(s=>s.trim()).filter(Boolean);
+  let   urlIdx   = 0;
   const btn      = card.querySelector('.atc-play-btn');
   const icon     = card.querySelector('.atc-play-icon');
   const statusEl = card.querySelector('.atc-status-text');
@@ -5266,8 +5271,9 @@ document.querySelectorAll('.atc-player').forEach(card=>{
       audio.load();
     }catch(_){}
     setState('loading');
-    // Cache-bust in case the browser cached an old buffer
-    audio.src = url + (url.includes('?')?'&':'?') + 't=' + Date.now();
+    // No cache-bust query param: live Icecast streams are never cached by the
+    // browser, and extra params risk confusing LiveATC's redirect servers.
+    audio.src = urls[urlIdx % urls.length];
     const playPromise = audio.play();
     if(playPromise && playPromise.catch){
       playPromise.catch(err=>{
@@ -5297,6 +5303,7 @@ document.querySelectorAll('.atc-player').forEach(card=>{
       return;
     }
     reconnectAttempts++;
+    urlIdx++;                        // next attempt tries the next mount
     setState('error');
     const delay = Math.min(2000 * reconnectAttempts, 10000);
     reconnectTimer = setTimeout(()=>{
@@ -5330,6 +5337,7 @@ document.querySelectorAll('.atc-player').forEach(card=>{
     } else {
       userWantsPlay = true;
       reconnectAttempts = 0;
+      urlIdx = 0;                    // fresh play starts from the primary mount
       startStream();
     }
   });
