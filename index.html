@@ -5641,6 +5641,15 @@ function _airlineLogo(flightNo){
     + `</div>`;
 }
 
+// Escape upstream API strings before they land in innerHTML. Flight numbers,
+// city names, airline names etc. come from AeroDataBox and must never be
+// trusted as markup.
+function _esc(s){
+  return String(s==null?'':s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
 // Best-known time for a flight: revised if present, else scheduled.
 function _effTime(f){
   const iso = f.revISO || f.schedISO;
@@ -5706,20 +5715,20 @@ function _fbHeroHTML(f, isArr){
     <div class="fb-hero-body">
       ${_airlineLogo(f.flightNo)}
       <div class="fb-hero-main">
-        <div class="fb-hero-fno">${dir} ${f.flightNo}</div>
+        <div class="fb-hero-fno">${dir} ${_esc(f.flightNo)}</div>
         <div class="fb-hero-route">
           ${isArr?'':'<span class="fb-hero-orig">CUR</span><span class="fb-hero-arrow">→</span>'}
-          ${f.iata?`<span class="fb-hero-iata">${f.iata}</span>`:''}
-          <span class="fb-hero-city">${f.place}</span>
+          ${f.iata?`<span class="fb-hero-iata">${_esc(f.iata)}</span>`:''}
+          <span class="fb-hero-city">${_esc(f.place)}</span>
           ${isArr?'<span class="fb-hero-arrow">→</span><span class="fb-hero-orig">CUR</span>':''}
           ${wxSlot}
         </div>
-        <div class="fb-hero-aln">${f.airline||''}</div>
+        <div class="fb-hero-aln">${_esc(f.airline||'')}</div>
       </div>
       <div class="fb-hero-side">
         <span class="fb-hero-time">${t}</span>
         <span class="fb-hero-count" data-target="${tgt||''}">${_countdownText(tgt)}</span>
-        <span class="fb-card-badge">${st.label}</span>
+        <span class="fb-card-badge">${_esc(st.label)}</span>
       </div>
     </div>
   </div>`;
@@ -5803,20 +5812,20 @@ async function renderFlightBoard(direction){
         <div class="fb-card-main">
           <div class="fb-card-r1">
             <span class="fb-card-dir">${dir}</span>
-            <span class="fb-card-fno">${f.flightNo}</span>
-            <span class="fb-card-aln">${f.airline||''}</span>
+            <span class="fb-card-fno">${_esc(f.flightNo)}</span>
+            <span class="fb-card-aln">${_esc(f.airline||'')}</span>
           </div>
           <div class="fb-card-r2">
-            ${f.iata?`<span class="fb-card-iata">${f.iata}</span>`:''}
-            <span class="fb-card-city">${f.place}</span>
+            ${f.iata?`<span class="fb-card-iata">${_esc(f.iata)}</span>`:''}
+            <span class="fb-card-city">${_esc(f.place)}</span>
             ${wxSlot}
-            ${gate?`<span class="fb-card-gate">🚪 ${gate}</span>`:''}
+            ${gate?`<span class="fb-card-gate">🚪 ${_esc(gate)}</span>`:''}
           </div>
         </div>
         <div class="fb-card-side">
           <span class="fb-card-sched">${t}</span>
           ${tr?`<span class="fb-card-rev">→ ${tr}</span>`:''}
-          <span class="fb-card-badge">${st.label}</span>
+          <span class="fb-card-badge">${_esc(st.label)}</span>
         </div>
       </div>`;
     }).join('');
