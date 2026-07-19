@@ -142,6 +142,16 @@
   --shadow-glow:0 0 30px -8px var(--cyan-glow);
 }
 
+/* ── GLOBAL TYPE SCALE ──
+   Everything on the page is sized in rem, so the root font-size is the one
+   master dial. Each step below is the largest verified overflow-free size
+   for that viewport class (headless-Chromium sweep of every page). */
+html{font-size:17px}
+@media(min-width:768px){ html{font-size:19px} }
+@media(min-width:1280px){ html{font-size:20px} }
+@media(min-width:1440px){ html{font-size:21px} }
+@media(min-width:1920px){ html{font-size:22px} }
+
 /* ── NIGHT MODE — warm tactical amber ── */
 body.night{
   --accent:#ff8a4c;
@@ -851,8 +861,8 @@ header{
   grid-template-columns:auto 1fr auto;
   align-items:center;
   gap:10px;
-  height:56px;
-  padding:0 14px;
+  min-height:56px;              /* min-, not fixed: grows with the type scale instead of clipping */
+  padding:4px 14px;
   background:linear-gradient(180deg,rgba(8,12,20,0.97) 0%,rgba(4,6,11,0.95) 100%);
   border-bottom:1px solid var(--border-hi);
   backdrop-filter:blur(20px);
@@ -4189,7 +4199,7 @@ body.night .tab-btn.active{
 @media(max-width:1000px){
   .col-6{grid-column:1/-1}
   .layout{gap:12px;padding:12px 14px 28px}
-  header{height:50px;padding:0 10px;gap:8px}
+  header{min-height:50px;padding:3px 10px;gap:8px}
   .header-title{font-size:.7rem;letter-spacing:.16em}
   .clock-time{font-size:1rem}
   .clock-block{padding:4px 8px}
@@ -4203,9 +4213,18 @@ body.night .tab-btn.active{
   /* Section title smaller padding */
   .section-title{padding:10px 4px 8px;font-size:.56rem}}
 
+/* ── Laptop band (1001–1279px): header pills need the same trim as tablet
+   now that the global type scale runs larger ── */
+@media(min-width:1001px) and (max-width:1279px){
+  .tropics-lbl{display:none}
+  .sync-indicator .sync-refresh-icon{display:none}
+  .lock-label{display:none}
+  .header-pill{padding:4px 8px}
+}
+
 /* ── Large phone (≤680px) ── */
 @media(max-width:680px){
-  header{height:46px;padding:0 8px;gap:6px}
+  header{min-height:46px;padding:3px 8px;gap:6px}
   .header-title{display:none}
   .clock-block{padding:4px 7px}
   .clock-time{font-size:.78rem}
@@ -4249,7 +4268,7 @@ body.night .tab-btn.active{
 
 /* ── Small phone (≤420px) ── */
 @media(max-width:420px){
-  header{height:44px;padding:0 6px;gap:4px}
+  header{min-height:44px;padding:2px 6px;gap:4px}
   .clock-display{gap:4px}
   .clock-block{padding:3px 6px}
   .clock-time{font-size:.72rem}
