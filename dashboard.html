@@ -58,6 +58,26 @@
   --shadow-glow:0 0 30px -8px var(--cyan-glow);
 }
 
+/* ── GLOBAL TYPE SCALE ──
+   Everything on the page is sized in rem, so the root font-size is the one
+   master dial. Each step below is the largest verified overflow-free size
+   for that viewport class (headless-Chromium sweep of every page). */
+html{font-size:17px}
+@media(min-width:768px){ html{font-size:19px} }
+@media(min-width:1280px){ html{font-size:20px} }
+@media(min-width:1440px){ html{font-size:21px} }
+@media(min-width:1920px){ html{font-size:22px} }
+
+/* ── Compact header chrome on phones so the button row never overflows.
+   (body-prefixed selectors: this block sits before the base rules, so it
+   needs the extra specificity to override them.) ── */
+@media(max-width:600px){
+  body header{padding:0 10px;gap:6px}
+  body .header-actions{gap:5px}
+  body .header-actions .night-btn,
+  body .header-actions .toggle-container{padding:5px 8px;letter-spacing:.06em}
+}
+
 /* ── NIGHT MODE — warm tactical amber ── */
 body.night{
   --accent:#ff8a4c;
