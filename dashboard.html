@@ -2826,9 +2826,15 @@ document.querySelectorAll('.atc-player').forEach(card=>{
   audio.volume = volSlider.value/100;
 
   let userWantsPlay = false;
-  let reconnectAttempts = 0;
+  let attempts   = 0;
+  let gen        = 0;          // bumped every start/stop — stale async events are ignored
+  let failedGen  = -1;         // latches the attempt that already failed (see failOver)
+  let hint       = '';         // extra status text (e.g. autoplay blocked)
   let reconnectTimer = null;
-  const MAX_RECONNECTS = 5;
+  let watchdogTimer  = null;
+  const MAX_ATTEMPTS = Math.max(4, urls.length * 2);
+  const CONNECT_MS   = 12000;  // no audio flowing within this → mount is dead, fail over
+  const STALL_MS     = 20000;  // mid-stream silence this long → reconnect
 
   function setState(state){
     card.classList.remove('loading','playing','error');
@@ -2837,36 +2843,64 @@ document.querySelectorAll('.atc-player').forEach(card=>{
       state==='loading' ? '◐' :
       state==='playing' ? '■' : '▶';
     statusEl.textContent =
-      state==='loading' ? 'Connecting' :
+      state==='loading' ? (attempts>0?`Retry ${attempts}/${MAX_ATTEMPTS}`:'Connecting') :
       state==='playing' ? 'Live' :
-      state==='error'   ? (reconnectAttempts>0?`Retry ${reconnectAttempts}/${MAX_RECONNECTS}`:'Error') :
-                          'Idle';
+      state==='error'   ? 'Error' :
+                          (hint || 'Idle');
+  }
+
+  function clearTimers(){
+    clearTimeout(reconnectTimer); reconnectTimer = null;
+    clearTimeout(watchdogTimer);  watchdogTimer  = null;
+  }
+
+  // A live stream that connects but never delivers audio fires no 'error' event,
+  // so without this the player would sit on "Connecting" forever.
+  function armWatchdog(ms, myGen){
+    clearTimeout(watchdogTimer);
+    watchdogTimer = setTimeout(()=>{
+      if(!userWantsPlay || myGen !== gen) return;
+      console.warn('ATC watchdog: no audio from', audio.src);
+      failOver();
+    }, ms);
   }
 
   function startStream(){
-    clearTimeout(reconnectTimer);
-    try{
-      audio.pause();
-      audio.removeAttribute('src');
-      audio.load();
-    }catch(_){}
+    clearTimers();
+    const myGen = ++gen;
+    hint = '';
     setState('loading');
-    // No cache-bust query param: live Icecast streams are never cached by the
-    // browser, and extra params risk confusing LiveATC's redirect servers.
+    // Assigning src (then load) aborts any in-flight request on its own — the old
+    // removeAttribute('src')+load() teardown fired a spurious 'error' that cancelled
+    // the very connection being opened.
     audio.src = urls[urlIdx % urls.length];
-    const playPromise = audio.play();
-    if(playPromise && playPromise.catch){
-      playPromise.catch(err=>{
-        console.warn('ATC play() rejected:',err.message);
-        scheduleReconnect();
+    audio.load();
+    armWatchdog(CONNECT_MS, myGen);
+    const p = audio.play();
+    if(p && p.catch){
+      p.catch(err=>{
+        if(myGen !== gen || !userWantsPlay) return;   // superseded by a newer attempt
+        // Autoplay policy rejection is not a stream failure: retrying (and burning
+        // the mount list) can't help, only another user gesture can.
+        if(err && err.name === 'NotAllowedError'){
+          clearTimers();
+          userWantsPlay = false;
+          hint = 'Tap ▶';
+          setState(null);
+          return;
+        }
+        console.warn('ATC play() rejected:', err && err.message);
+        failOver();
       });
     }
   }
 
   function stopStream(){
     userWantsPlay = false;
-    clearTimeout(reconnectTimer);
-    reconnectAttempts = 0;
+    gen++;                       // invalidate any in-flight attempt
+    attempts = 0;
+    hint = '';
+    clearTimers();
     try{
       audio.pause();
       audio.removeAttribute('src');
@@ -2875,40 +2909,69 @@ document.querySelectorAll('.atc-player').forEach(card=>{
     setState(null);
   }
 
-  function scheduleReconnect(){
+  function failOver(){
     if(!userWantsPlay) return;
-    if(reconnectAttempts >= MAX_RECONNECTS){
+    // A single dead mount reports itself twice — once via the 'error' event and
+    // once via the play() promise rejection. Without this latch each real failure
+    // burned two attempts and advanced the mount index by two, stepping straight
+    // over the healthy alternate.
+    if(failedGen === gen) return;
+    failedGen = gen;
+    clearTimers();
+    if(attempts >= MAX_ATTEMPTS){
+      // Give up, but hand the button back so the user can retry deliberately.
+      userWantsPlay = false;
+      attempts = 0;
+      gen++;
+      try{ audio.pause(); audio.removeAttribute('src'); audio.load(); }catch(_){}
       setState('error');
-      reconnectAttempts = 0;
       return;
     }
-    reconnectAttempts++;
-    urlIdx++;                        // next attempt tries the next mount
-    setState('error');
-    const delay = Math.min(2000 * reconnectAttempts, 10000);
-    reconnectTimer = setTimeout(()=>{
-      if(userWantsPlay) startStream();
-    }, delay);
+    attempts++;
+    urlIdx++;                    // next attempt tries the next mount in the list
+    setState('loading');
+    const delay = Math.min(1500 * attempts, 8000);
+    reconnectTimer = setTimeout(()=>{ if(userWantsPlay) startStream(); }, delay);
   }
 
   audio.addEventListener('playing',()=>{
-    reconnectAttempts = 0;
+    if(!userWantsPlay) return;
+    attempts = 0;
+    clearTimeout(watchdogTimer); watchdogTimer = null;
     setState('playing');
   });
   audio.addEventListener('waiting',()=>{
-    if(userWantsPlay) setState('loading');
+    if(!userWantsPlay) return;
+    setState('loading');
+    armWatchdog(STALL_MS, gen);          // buffering forever counts as a failure
+  });
+  audio.addEventListener('stalled',()=>{
+    if(!userWantsPlay) return;
+    setState('loading');
+    armWatchdog(STALL_MS, gen);
+  });
+  // Bytes arriving = the mount is alive, it's just still filling its buffer.
+  // Re-arm the watchdog so a slow-but-healthy feed isn't killed as if it were dead;
+  // only a connection delivering nothing at all should trigger failover.
+  audio.addEventListener('progress',()=>{
+    if(!userWantsPlay || audio.readyState === 0) return;
+    if(!card.classList.contains('playing')) armWatchdog(STALL_MS, gen);
+  });
+  audio.addEventListener('loadeddata',()=>{
+    if(!userWantsPlay) return;
+    if(!card.classList.contains('playing')) armWatchdog(STALL_MS, gen);
   });
   audio.addEventListener('pause',  ()=>{
     if(!userWantsPlay) setState(null);
   });
   audio.addEventListener('error',  ()=>{
-    if(userWantsPlay) scheduleReconnect();
-  });
-  audio.addEventListener('stalled',()=>{
-    if(userWantsPlay) setState('loading');
+    if(!userWantsPlay) return;
+    // Ignore the error the browser fires while tearing down an empty src.
+    if(!audio.getAttribute('src')) return;
+    failOver();
   });
   audio.addEventListener('ended',  ()=>{
-    if(userWantsPlay) scheduleReconnect();
+    if(userWantsPlay) failOver();       // live streams shouldn't end — treat as a drop
   });
 
   btn.addEventListener('click',()=>{
@@ -2916,8 +2979,9 @@ document.querySelectorAll('.atc-player').forEach(card=>{
       stopStream();
     } else {
       userWantsPlay = true;
-      reconnectAttempts = 0;
-      urlIdx = 0;                    // fresh play starts from the primary mount
+      attempts = 0;
+      // urlIdx is deliberately NOT reset: it points at the mount that last worked,
+      // so a replay reuses it instead of stalling on a known-dead primary again.
       startStream();
     }
   });
