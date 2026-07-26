@@ -2552,6 +2552,17 @@ body.night .tab-btn.active{
   pointer-events:none;
 }
 .sat-tile{opacity:.5}
+/* Small freshness readout — no controls, just "as of HH:MM". */
+#radar-hud{
+  /* Above .overlay-blocker (z-index 1000), which covers the map while scroll
+     lock is engaged. */
+  position:absolute;left:10px;bottom:10px;z-index:1001;
+  padding:5px 9px;border-radius:var(--radius);
+  background:rgba(4,8,16,0.82);border:1px solid var(--border-hi);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.08em;
+  color:var(--text);pointer-events:none;white-space:nowrap;
+}
 
 /* ── WORLD AIRPORT DETAIL MODAL ── */
 .world-ovr-card{cursor:pointer}
@@ -4605,6 +4616,10 @@ body.night .tab-btn.active{
       <div id="sat-overlay" style="position:absolute;inset:0;pointer-events:none;z-index:4;overflow:hidden;display:none"></div>
       <!-- Radar tile overlay (RainViewer — free, no key) -->
       <div id="radar-overlay" style="position:absolute;inset:0;pointer-events:none;z-index:5;overflow:hidden;display:none"></div>
+      <!-- Radar freshness readout -->
+      <div id="radar-hud" style="display:none">
+        <span id="radarTimeLbl">—</span>
+      </div>
     </div>
   </div>
 
@@ -7473,14 +7488,28 @@ function tileToPixel(tx, ty, tz, mapView, boxW, boxH){
   return { px, py };
 }
 
+var _radarFrameTime = null;   // unix seconds of the currently-shown frame, for the HUD label
+
 async function fetchRadarTimestamp(){
   try{
     const r = await fetch('https://api.rainviewer.com/public/weather-maps.json',{cache:'no-store'});
     if(!r.ok) return;
     const d = await r.json();
     const frames = d.radar?.past;
-    if(frames && frames.length) _radarTimestamp = frames[frames.length-1].path;
+    if(frames && frames.length){
+      _radarTimestamp  = frames[frames.length-1].path;
+      _radarFrameTime  = frames[frames.length-1].time;
+    }
   }catch(e){ console.warn('[Radar]',e.message); }
+}
+
+function _radarLabel(){
+  const lbl = document.getElementById('radarTimeLbl');
+  if(!lbl || !_radarFrameTime) return;
+  const hhmm = new Date(_radarFrameTime*1000)
+    .toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'America/Curacao'});
+  const mins = Math.round((Date.now() - _radarFrameTime*1000)/60000);
+  lbl.textContent = `Radar ${hhmm} · ${mins<=1?'now':mins+' min ago'}`;
 }
 
 /* Shared XYZ tile-overlay renderer for the ADS-B map.
@@ -7490,9 +7519,15 @@ async function fetchRadarTimestamp(){
 function renderTileOverlay(overlayId, active, maxZ, cssClass, urlFor){
   const overlay = document.getElementById(overlayId);
   if(!overlay || !active) return;
+  const html = buildTileHTML(overlay, maxZ, cssClass, urlFor);
+  overlay.innerHTML = html;
+}
+
+/* Lay out one grid of XYZ tiles over the map box and return it as HTML. */
+function buildTileHTML(overlay, maxZ, cssClass, urlFor){
   const box = overlay.getBoundingClientRect();
   const W = box.width||overlay.offsetWidth, H = box.height||overlay.offsetHeight;
-  if(!W||!H){ overlay.innerHTML=''; return; }
+  if(!W||!H) return '';
 
   const z = Math.max(1, Math.min(maxZ, Math.round(_mapView.zoom)));
   // On-screen size of one tile: the map world is 256·2^zoom px wide and a
@@ -7512,10 +7547,12 @@ function renderTileOverlay(overlayId, active, maxZ, cssClass, urlFor){
       if(ty<0 || ty>=n) continue;
       const txw = ((tx % n) + n) % n; // wrap X for the tile URL
       const {px,py} = tileToPixel(tx,ty,z,_mapView,W,H);
-      html+=`<img class="${cssClass}" src="${urlFor(z,txw,ty)}" style="left:${px.toFixed(1)}px;top:${py.toFixed(1)}px;width:${tilePx.toFixed(1)}px;height:${tilePx.toFixed(1)}px" loading="lazy" onerror="this.style.display='none'">`;
+      // No loading="lazy": these tiles are all inside the visible map box, and
+      // lazy loading delayed (or skipped) them inside the overlay container.
+      html+=`<img class="${cssClass}" src="${urlFor(z,txw,ty)}" style="left:${px.toFixed(1)}px;top:${py.toFixed(1)}px;width:${tilePx.toFixed(1)}px;height:${tilePx.toFixed(1)}px" decoding="async" onerror="this.style.display='none'">`;
     }
   }
-  overlay.innerHTML = html;
+  return html;
 }
 
 function renderRadarTiles(){
@@ -7525,6 +7562,7 @@ function renderRadarTiles(){
   if(!_radarTimestamp) return;
   renderTileOverlay('radar-overlay', _radarActive, 7, 'radar-tile',
     (z,x,y)=>`https://tilecache.rainviewer.com${_radarTimestamp}/512/${z}/${x}/${y}/2/1_1.png`);
+  _radarLabel();
 }
 
 function renderSatTiles(){
@@ -7543,11 +7581,18 @@ async function toggleRadar(){
   if(btn) btn.dataset.active = _radarActive?'1':'0';
 
   const overlay = document.getElementById('radar-overlay');
+  const hud     = document.getElementById('radar-hud');
   if(!overlay) return;
 
   if(_radarActive){
     overlay.style.display='';
+    if(hud) hud.style.display='';
     if(!_radarTimestamp) await fetchRadarTimestamp();
+    if(!_radarTimestamp){                       // API unreachable — say so, don't sit blank
+      const lbl = document.getElementById('radarTimeLbl');
+      if(lbl) lbl.textContent = 'Radar unavailable';
+      return;
+    }
     renderRadarTiles();
     // Refresh radar every 5 min
     _radarTimer = setInterval(async ()=>{
@@ -7557,6 +7602,7 @@ async function toggleRadar(){
   }else{
     overlay.style.display='none';
     overlay.innerHTML='';
+    if(hud) hud.style.display='none';
     if(_radarTimer){ clearInterval(_radarTimer); _radarTimer=null; }
   }
 }
