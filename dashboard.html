@@ -4773,9 +4773,14 @@ async function checkStormAlerts(){
 
     const nearby = [];
     for(const s of storms){
-      const lat = parseFloat(s.lat);
-      const lon = parseFloat(s.lon);
-      if(isNaN(lat) || isNaN(lon)) continue;
+      // NHC JSON may encode coords as "25.4N" / "80.3W" — parse direction suffix
+      const rawLat = String(s.lat||'');
+      const rawLon = String(s.lon||'');
+      let lat = parseFloat(rawLat);
+      let lon = parseFloat(rawLon);
+      if(/S$/i.test(rawLat)) lat = -Math.abs(lat);
+      if(/W$/i.test(rawLon)) lon = -Math.abs(lon);
+      if(!isFinite(lat) || !isFinite(lon)) continue;
       const dist = haversineKm(ABC_CENTER, {lat, lon});
       if(dist <= ALERT_RADIUS_KM){
         nearby.push({

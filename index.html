@@ -5512,7 +5512,10 @@ function switchTab(name){
     }
     if(name==='marine' && marineLoaded){
       const age = Date.now() - (window._marineLastRender||0);
-      if(age > STALE_RERENDER_MS){ marineLoaded=false; loadMarine(); }
+      // Tides share the marine tab's staleness window: fetchTides() only ever
+      // ran once per session otherwise, so its ~1.5-day prediction window would
+      // eventually run out with no automatic recovery.
+      if(age > STALE_RERENDER_MS){ marineLoaded=false; loadMarine(); fetchTides(); }
     }
   }catch(err){ console.error('[Tabs] stale re-render failed:', err); }
 }
@@ -5877,7 +5880,13 @@ setInterval(()=>{
   });
 }, 30000);
 
+// Bumped on every call; each call captures its own id and checks it's still
+// the latest before writing its result, so a slow/out-of-order response
+// (e.g. two rapid toggles, or a manual refresh overlapping the poll) can
+// never overwrite a newer render with stale data.
+let _fbRenderGen = 0;
 async function renderFlightBoard(direction){
+  const myGen = ++_fbRenderGen;
   const el  = document.getElementById('flightBoard');
   const upd = document.getElementById('flightBoardUpdated');
   if(!el) return;
@@ -5885,6 +5894,7 @@ async function renderFlightBoard(direction){
   el.innerHTML='<div class="fb-skeleton"><div class="fb-skel-row"></div><div class="fb-skel-row"></div><div class="fb-skel-row"></div><div class="fb-skel-row"></div></div>';
   try{
     const {rows, stale, staleTs} = await fetchCuracaoFlights(direction);
+    if(myGen !== _fbRenderGen) return;   // superseded while we were fetching
     if(stale){
       if(upd) upd.textContent = 'Cached · ' + new Date(staleTs).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'America/Curacao'});
       setBadge('flightBoardBadge','STALE','warn');
@@ -5934,6 +5944,7 @@ async function renderFlightBoard(direction){
     if(!stale) setBadge('flightBoardBadge','LIVE');
     decorateDestWeather(rows);
   }catch(err){
+    if(myGen !== _fbRenderGen) return;   // superseded while we were fetching
     if(upd) upd.textContent = '';
     el.innerHTML = `<div class="fb-notice">⚠️ Couldn't load the live board (${err.message||'error'}).<br>The official airport board on the right still works.</div>`;
     setBadge('flightBoardBadge','ERROR','error');
@@ -6264,8 +6275,12 @@ function renderTAFStrip(tafList){
       const chgCode=(f.change?.indicator?.code||'FM').replace(/\d+/,'');
       const chgText =f.change?.indicator?.text||'FM';
       const windObj=f.wind||{};
+      // CheckWX omits `degrees` and sets direction:'VRB' for variable wind — show
+      // that instead of defaulting to a fake, specific "000° N" heading.
+      const windDir = windObj.degrees!==undefined ? `${pad(windObj.degrees)}° ${wdCard(windObj.degrees)}`
+        : (windObj.direction==='VRB' ? 'VRB' : '—');
       const windStr=windObj.speed_kts!==undefined
-        ?`${pad(windObj.degrees||0)}° ${wdCard(windObj.degrees||0)} ${windObj.speed_kts} KT${windObj.gust_kts?` G${windObj.gust_kts} KT`:''}`
+        ?`${windDir} ${windObj.speed_kts} KT${windObj.gust_kts?` G${windObj.gust_kts} KT`:''}`
         :'—';
       const visMtr=f.visibility?.meters;
       const visStr=visMtr!==undefined?(visMtr>=9999?'>10 km':(visMtr/1000).toFixed(1)+' km'):'—';
@@ -7238,8 +7253,12 @@ async function openWorldModal(icao){
   if(m){
     const cat  = m.flight_category||'—';
     const wind = m.wind||{};
+    // VRB winds (common: e.g. VRB05KT) have speed_kts set but degrees omitted —
+    // the old check only looked for VRB in the branch where speed was absent, so
+    // the far more common "VRB + speed" case silently dropped the VRB label.
+    const windDirStr = wind.degrees!=null ? pad(wind.degrees)+'° ' : (wind.direction==='VRB'?'VRB ':'');
     const windStr = wind.speed_kts!=null
-      ? `${wind.degrees!=null?pad(wind.degrees)+'° ':''}${wind.speed_kts} kt${wind.gust_kts?' G'+wind.gust_kts:''}`
+      ? `${windDirStr}${wind.speed_kts} kt${wind.gust_kts?' G'+wind.gust_kts:''}`
       : (wind.direction==='VRB'?'VRB':'—');
     metarHtml = `
       <div class="wm-raw">${m.raw_text||'—'}</div>
@@ -8512,6 +8531,18 @@ function buildCurrentWxCard(loc, wxapi, models, aqiCol, aqiL){
   </div>`;
 }
 
+// WeatherAPI's hourly `time` field ("YYYY-MM-DD HH:mm") has no offset and is
+// already local to the queried island (Curaçao/Aruba/Bonaire — UTC-4 year-round,
+// no DST). Parsing it with `new Date()` reads those digits as the *viewer's*
+// local time instead, which shifts the "current hour" highlight and every hour
+// label by the viewer's own offset from UTC-4. Parse explicitly against UTC-4.
+function _curacaoLocalToDate(timeStr){
+  const m = String(timeStr||'').match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/);
+  if(!m) return { date:new Date(NaN), hour:NaN };
+  const [y, mo, d, h, mi] = m.slice(1).map(Number);
+  return { date: new Date(Date.UTC(y, mo-1, d, h+4, mi)), hour: h };
+}
+
 function buildHourlyStrip(day0, icao, day1){
   if(!day0?.hour?.length) return '';
   const now = Date.now();
@@ -8520,7 +8551,7 @@ function buildHourlyStrip(day0, icao, day1){
   const allHours = [
     ...(day0.hour||[]),
     ...(day1?.hour||[]),
-  ].filter(h => { const ms = new Date((h.time||'').replace(' ','T')).getTime(); return isFinite(ms) && ms >= now - 1800000; });
+  ].filter(h => { const ms = _curacaoLocalToDate(h.time).date.getTime(); return isFinite(ms) && ms >= now - 1800000; });
 
   if(!allHours.length) return '';
 
@@ -8529,8 +8560,7 @@ function buildHourlyStrip(day0, icao, day1){
   const maxWind   = Math.max(1, ...show.map(h=>Math.max((h.wind_kph||0),(h.gust_kph||0))*0.539957));
 
   const cells = show.map(h=>{
-    const t      = new Date((h.time||'').replace(' ','T'));
-    const hr     = t.getHours();
+    const { date:t, hour:hr } = _curacaoLocalToDate(h.time);
     const isNow  = isFinite(t.getTime()) && Math.abs(t.getTime()-now) < 3600000;
     const isMid  = hr === 0; // midnight — show day label
     const lbl    = isMid
@@ -8802,7 +8832,10 @@ async function loadForecast(forceNewsUpdate=false){
         const rainMm = Number((isFinite(rawRainMm)?rawRainMm:0).toFixed(1));
         const windKt = Math.round(windKB.mean  ?? (wxDay?.day?.maxwind_kph||0)*0.539957);
         const gustKt = Math.round(gustKB.mean  ?? (windKt > 0 ? windKt * 1.25 : 0));
-        const windDeg= Math.round(windDB.mean ?? wxDay?.hour?.find(h=>h.wind_degree!=null)?.wind_degree ?? 90) || 90;
+        // No `|| 90` fallback here: a genuinely-computed 0°/true-north is falsy
+        // and would otherwise get silently rewritten to 90°/east.
+        const windDegRaw = windDB.mean ?? wxDay?.hour?.find(h=>h.wind_degree!=null)?.wind_degree;
+        const windDeg = isFinite(windDegRaw) ? Math.round(windDegRaw) : 90;
         const uvRaw  = uvB.mean ?? wxDay?.day?.uv ?? 8;
         const uv     = Number((isFinite(uvRaw)?uvRaw:8).toFixed(1));
 
@@ -9970,7 +10003,10 @@ setInterval(()=>{
 // Refresh marine every 30 min when its tab is open (skip if data is <20 min old)
 setInterval(()=>{
   const active=document.querySelector('.tab-pane.active');
-  if(active && active.id==='tab-marine' && (!window._marineLastRender || Date.now()-window._marineLastRender > 20*60*1000)) loadMarine();
+  if(active && active.id==='tab-marine' && (!window._marineLastRender || Date.now()-window._marineLastRender > 20*60*1000)){
+    loadMarine();
+    fetchTides();
+  }
 }, 30 * 60 * 1000);
 
 /* No more page reload — ATC audio must stay alive.
@@ -10387,11 +10423,20 @@ setInterval(checkStormAlerts, 30 * 60 * 1000);
         return;
       }
 
-      // Static assets — cache-first
+      // Static assets — cache-first.
+      // Cross-origin requests issued without an explicit CORS mode (e.g. the
+      // Google Fonts <link>, which has no crossorigin attribute) come back as
+      // type:'opaque' with ok:false always, by spec — you can't inspect an
+      // opaque response's real status. The old res.ok && res.type==='basic'
+      // check silently skipped caching every such response, so fonts were
+      // fetched fresh every load and never available offline. Cache opaque
+      // responses too; keep the .ok gate only for same-origin ('basic')
+      // responses so real 404/500s from this site still aren't cached.
       e.respondWith(
         caches.match(e.request).then(cached =>
           cached || fetch(e.request).then(res => {
-            if(res.ok && res.type === 'basic'){
+            const cacheable = res.type === 'opaque' || (res.ok && res.type === 'basic');
+            if(cacheable){
               caches.open(CACHE).then(c => c.put(e.request, res.clone()));
             }
             return res;
