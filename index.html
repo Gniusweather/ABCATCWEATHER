@@ -4596,19 +4596,22 @@ body.night .tab-btn.active{
     </div>
   </div>
 
-  <!-- Windy radar + satellite/cloud overlays — sit directly under Live ATC -->
+  <!-- Windy radar + satellite overlays — sit directly under Live ATC.
+       Centered on the ABC-islands centroid (12.30, -69.10) at zoom 8, same
+       point used for the ADS-B map, so both stay tight on Aruba/Curaçao/Bonaire
+       instead of the wider-Caribbean framing the default Windy embed uses. -->
   <div class="full" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
     <div>
-      <div class="section-title">Windy — Cloud Cover</div>
+      <div class="section-title">Windy — Satellite</div>
       <div class="radar-box">
-        <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.2&lon=-68.96&zoom=7&overlay=clouds" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.30&lon=-69.10&zoom=8&overlay=satellite" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
         <div class="overlay-blocker"></div>
       </div>
     </div>
     <div>
       <div class="section-title">Windy — Precipitation Radar</div>
       <div class="radar-box">
-        <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.2&lon=-68.96&zoom=7&overlay=radar" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.30&lon=-69.10&zoom=8&overlay=radar" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
         <div class="overlay-blocker"></div>
       </div>
     </div>
