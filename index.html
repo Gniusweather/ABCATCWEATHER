@@ -1347,6 +1347,14 @@ body.night .tab-btn:hover{background:rgba(204,136,0,0.06);}
     0 0 0 1px rgba(34,211,238,0.06),
     0 20px 40px -20px rgba(0,0,0,0.6);
 }
+/* Aviation tab's Windy Satellite/Radar row — square panels instead of the
+   fixed 380px rectangle, sized off their own column width. */
+.windy-square-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:680px){ .windy-square-row{grid-template-columns:1fr} }
+/* Double class for specificity: outranks the .radar-box{height:...} overrides
+   in the tablet/mobile breakpoints below, which would otherwise win by source
+   order despite equal specificity and silently un-square these two panels. */
+.radar-box.radar-box-square{height:auto;aspect-ratio:1/1}
 .radar-box::before{
   content:'';position:absolute;inset:0;border-radius:var(--radius-lg);
   background:
@@ -4600,17 +4608,17 @@ body.night .tab-btn.active{
        Centered on the ABC-islands centroid (12.30, -69.10) at zoom 8, same
        point used for the ADS-B map, so both stay tight on Aruba/Curaçao/Bonaire
        instead of the wider-Caribbean framing the default Windy embed uses. -->
-  <div class="full" style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+  <div class="full windy-square-row">
     <div>
       <div class="section-title">Windy — Satellite</div>
-      <div class="radar-box">
+      <div class="radar-box radar-box-square">
         <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.30&lon=-69.10&zoom=8&overlay=satellite" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
         <div class="overlay-blocker"></div>
       </div>
     </div>
     <div>
       <div class="section-title">Windy — Precipitation Radar</div>
-      <div class="radar-box">
+      <div class="radar-box radar-box-square">
         <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.30&lon=-69.10&zoom=8&overlay=radar" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
         <div class="overlay-blocker"></div>
       </div>
