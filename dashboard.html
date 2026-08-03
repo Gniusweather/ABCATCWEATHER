@@ -2832,9 +2832,37 @@ document.querySelectorAll('.atc-player').forEach(card=>{
   let hint       = '';         // extra status text (e.g. autoplay blocked)
   let reconnectTimer = null;
   let watchdogTimer  = null;
+  let playedThisAttempt = false;  // has audio actually played on the current attempt?
+  let connectDeadline   = 0;      // absolute cap for reaching playback this attempt
+  let lastFailoverAt = 0;      // when we last dropped off the primary mount
+  let lastAutoResume = 0;      // throttles unrequested-pause recovery
   const MAX_ATTEMPTS = Math.max(4, urls.length * 2);
   const CONNECT_MS   = 12000;  // no audio flowing within this → mount is dead, fail over
   const STALL_MS     = 20000;  // mid-stream silence this long → reconnect
+  // Hard ceiling on the connect phase. 'waiting'/'stalled' fire repeatedly on a
+  // mount that accepts the socket but never sends audio, and each one re-armed
+  // the watchdog — pushing the deadline out indefinitely so the player sat on
+  // "Connecting" forever and never failed over. Re-arming is still allowed (a
+  // slow-but-alive feed must not be killed), but never past this cap.
+  const MAX_CONNECT_MS = 25000;
+  const PRIMARY_RETRY_MS = 10 * 60 * 1000;  // after this, a manual play retries the primary
+
+  // Full teardown — ONLY safe when userWantsPlay is already false, because
+  // load() with an empty src fires a delayed 'error' event. Both callers
+  // (stopStream, and failOver's give-up branch) clear userWantsPlay first, and
+  // the error/pause handlers bail out on !userWantsPlay.
+  function releaseAudio(){
+    try{ audio.pause(); audio.removeAttribute('src'); audio.load(); }catch(_){}
+  }
+
+  // Between failover attempts we must NOT do the empty-src teardown: its
+  // delayed 'error' lands after the next attempt has already set a new src, so
+  // the guard can't tell it apart and it aborts the healthy stream we just
+  // opened. pause() alone halts the fetch, and startStream's src assignment
+  // aborts whatever is left of the old request.
+  function haltAudio(){
+    try{ audio.pause(); }catch(_){}
+  }
 
   function setState(state){
     card.classList.remove('loading','playing','error');
@@ -2864,6 +2892,10 @@ document.querySelectorAll('.atc-player').forEach(card=>{
   // so without this the player would sit on "Connecting" forever.
   function armWatchdog(ms, myGen){
     clearTimeout(watchdogTimer);
+    // Before playback starts, never extend beyond the hard connect ceiling.
+    if(!playedThisAttempt){
+      ms = Math.min(ms, Math.max(500, connectDeadline - Date.now()));
+    }
     watchdogTimer = setTimeout(()=>{
       if(!userWantsPlay || myGen !== gen) return;
       console.warn('ATC watchdog: no audio from', audio.src);
@@ -2874,6 +2906,8 @@ document.querySelectorAll('.atc-player').forEach(card=>{
   function startStream(){
     clearTimers();
     const myGen = ++gen;
+    playedThisAttempt = false;
+    connectDeadline = Date.now() + MAX_CONNECT_MS;
     hint = '';
     setState('loading');
     // Assigning src (then load) aborts any in-flight request on its own — the old
@@ -2907,11 +2941,7 @@ document.querySelectorAll('.atc-player').forEach(card=>{
     attempts = 0;
     hint = '';
     clearTimers();
-    try{
-      audio.pause();
-      audio.removeAttribute('src');
-      audio.load();
-    }catch(_){}
+    releaseAudio();
     setState(null);
   }
 
@@ -2929,12 +2959,14 @@ document.querySelectorAll('.atc-player').forEach(card=>{
       userWantsPlay = false;
       attempts = 0;
       gen++;
-      try{ audio.pause(); audio.removeAttribute('src'); audio.load(); }catch(_){}
+      releaseAudio();
       setState('error');
       return;
     }
     attempts++;
     urlIdx++;                    // next attempt tries the next mount in the list
+    lastFailoverAt = Date.now();
+    haltAudio();                 // stop the dead fetch without a spurious error
     setState('loading');
     const delay = Math.min(1500 * attempts, 8000);
     reconnectTimer = setTimeout(()=>{ if(userWantsPlay) startStream(); }, delay);
@@ -2943,32 +2975,54 @@ document.querySelectorAll('.atc-player').forEach(card=>{
   audio.addEventListener('playing',()=>{
     if(!userWantsPlay) return;
     attempts = 0;
+    playedThisAttempt = true;
     clearTimeout(watchdogTimer); watchdogTimer = null;
     setState('playing');
   });
   audio.addEventListener('waiting',()=>{
     if(!userWantsPlay) return;
     setState('loading');
-    armWatchdog(STALL_MS, gen);          // buffering forever counts as a failure
+    armWatchdog(STALL_MS, gen);   // clamped to MAX_CONNECT_MS until playback starts
   });
   audio.addEventListener('stalled',()=>{
     if(!userWantsPlay) return;
     setState('loading');
     armWatchdog(STALL_MS, gen);
   });
-  // Bytes arriving = the mount is alive, it's just still filling its buffer.
-  // Re-arm the watchdog so a slow-but-healthy feed isn't killed as if it were dead;
-  // only a connection delivering nothing at all should trigger failover.
+  // Bytes actually arriving IS evidence the mount is alive — it may just be slow
+  // to fill its buffer. Re-arm here so a slow-but-healthy feed isn't killed.
   audio.addEventListener('progress',()=>{
     if(!userWantsPlay || audio.readyState === 0) return;
     if(!card.classList.contains('playing')) armWatchdog(STALL_MS, gen);
   });
   audio.addEventListener('loadeddata',()=>{
-    if(!userWantsPlay) return;
+    if(!userWantsPlay || audio.readyState === 0) return;
     if(!card.classList.contains('playing')) armWatchdog(STALL_MS, gen);
   });
   audio.addEventListener('pause',  ()=>{
-    if(!userWantsPlay) setState(null);
+    if(!userWantsPlay){ setState(null); return; }
+    // Only a pause that interrupts actual playback is a real interruption.
+    // 'pause' is delivered asynchronously, so our own teardown pauses arrive
+    // late — by then we are mid-reconnect ('loading', playedThisAttempt reset),
+    // and acting on them restarted the fresh attempt and killed it.
+    if(!playedThisAttempt || !card.classList.contains('playing')) return;
+    // We never asked for this pause: the OS/browser stopped the stream (audio
+    // focus lost to a call or another app, backgrounded tab suspended, network
+    // dropped). Nothing else fires in this case, so without recovering here the
+    // card keeps claiming "Live" while it is silent — the classic "it just
+    // stopped and looks stuck" symptom.
+    if(Date.now() - lastAutoResume < 2000) return;   // don't spin
+    lastAutoResume = Date.now();
+    console.warn('ATC: stream paused unexpectedly — resuming');
+    // Try a plain resume first: the connection and buffer are usually still
+    // intact, so this is near-instant, where a full reconnect costs seconds of
+    // "Connecting". The watchdog covers the case where the resume doesn't take,
+    // and an outright rejection falls back to a full reconnect.
+    armWatchdog(STALL_MS, gen);
+    const rp = audio.play();
+    if(rp && rp.catch){
+      rp.catch(()=>{ if(userWantsPlay){ setState('loading'); startStream(); } });
+    }
   });
   audio.addEventListener('error',  ()=>{
     if(!userWantsPlay) return;
@@ -2986,10 +3040,29 @@ document.querySelectorAll('.atc-player').forEach(card=>{
     } else {
       userWantsPlay = true;
       attempts = 0;
-      // urlIdx is deliberately NOT reset: it points at the mount that last worked,
-      // so a replay reuses it instead of stalling on a known-dead primary again.
+      // Normally keep the mount that last worked, so a replay doesn't stall on a
+      // known-dead primary. But feeds come back: if the failover happened a while
+      // ago, start from the primary again rather than staying on the backup for
+      // the whole life of the page.
+      if(urlIdx !== 0 && Date.now() - lastFailoverAt > PRIMARY_RETRY_MS) urlIdx = 0;
       startStream();
     }
+  });
+
+  // Coming back from a backgrounded tab / locked phone: mobile browsers often
+  // suspend or silently kill the stream without firing 'error' or 'stalled', so
+  // re-check that audio is actually running and reconnect if it is not.
+  function healthCheck(){
+    if(!userWantsPlay || document.hidden) return;
+    if(card.classList.contains('loading')) return;      // already reconnecting
+    if(audio.paused || audio.readyState < 2){
+      console.warn('ATC health check: stream not running after resume — reconnecting');
+      setState('loading');
+      startStream();
+    }
+  }
+  document.addEventListener('visibilitychange', ()=>{
+    if(!document.hidden) setTimeout(healthCheck, 900);
   });
 
   volSlider.addEventListener('input',()=>{
