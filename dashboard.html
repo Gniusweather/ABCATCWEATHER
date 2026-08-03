@@ -2842,9 +2842,15 @@ document.querySelectorAll('.atc-player').forEach(card=>{
     icon.textContent =
       state==='loading' ? '◐' :
       state==='playing' ? '■' : '▶';
+    // When playing on anything but the primary mount, say so — some sister
+    // players share the same fallback (e.g. Hato Tower and Hato Approach both
+    // fall back to the combined "Control" scanner feed), which otherwise
+    // silently makes two distinct-looking players sound identical with no
+    // indication why.
+    const onFallback = urls.length > 1 && (urlIdx % urls.length) !== 0;
     statusEl.textContent =
       state==='loading' ? (attempts>0?`Retry ${attempts}/${MAX_ATTEMPTS}`:'Connecting') :
-      state==='playing' ? 'Live' :
+      state==='playing' ? (onFallback ? 'Live · Backup' : 'Live') :
       state==='error'   ? 'Error' :
                           (hint || 'Idle');
   }
