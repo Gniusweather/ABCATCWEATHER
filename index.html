@@ -1283,6 +1283,10 @@ body.night .tab-btn:hover{background:rgba(204,136,0,0.06);}
   *::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.2);background-clip:padding-box}
 }
 .full{grid-column:1/-1}
+/* Screen-reader-only text: adds context to a control without changing
+   its visible label (an aria-label that omits the visible text trips
+   the label-content-name-mismatch rule for voice-control users). */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 .col-6{grid-column:span 6}
 
 /* ── SECTION TITLE ── */
@@ -4335,7 +4339,8 @@ body.night .tab-btn.active{
       <span class="tropics-lbl">Tropics:</span>
       <span id="tropicsText">—</span>
     </div>
-    <div class="sync-indicator" id="syncIndicator" title="Last data refresh — click to refresh now" role="button" tabindex="0" aria-label="Last data refresh, click to refresh now">
+    <div class="sync-indicator" id="syncIndicator" title="Last data refresh — click to refresh now" role="button" tabindex="0">
+      <span class="sr-only">Last data refresh, activate to refresh now:</span>
       <span class="sync-dot"></span>
       <span id="syncTime">—</span>
       <span class="sync-refresh-icon" id="refreshAllIcon" aria-hidden="true">↻</span>
@@ -4543,7 +4548,7 @@ body.night .tab-btn.active{
             </div>
             <div class="atc-volume">
               <span class="atc-vol-icon">🔊</span>
-              <input type="range" min="0" max="100" value="80" class="atc-vol-slider"/>
+              <input type="range" min="0" max="100" value="80" class="atc-vol-slider" aria-label="Volume — TNCC Hato Tower"/>
             </div>
           </div>
 
@@ -4559,7 +4564,7 @@ body.night .tab-btn.active{
             </div>
             <div class="atc-volume">
               <span class="atc-vol-icon">🔊</span>
-              <input type="range" min="0" max="100" value="80" class="atc-vol-slider"/>
+              <input type="range" min="0" max="100" value="80" class="atc-vol-slider" aria-label="Volume — TNCC Hato Approach / Radar"/>
             </div>
           </div>
         </div>
@@ -4578,7 +4583,7 @@ body.night .tab-btn.active{
             </div>
             <div class="atc-volume">
               <span class="atc-vol-icon">🔊</span>
-              <input type="range" min="0" max="100" value="80" class="atc-vol-slider"/>
+              <input type="range" min="0" max="100" value="80" class="atc-vol-slider" aria-label="Volume — TNCA Aruba Tower"/>
             </div>
           </div>
 
@@ -4594,7 +4599,7 @@ body.night .tab-btn.active{
             </div>
             <div class="atc-volume">
               <span class="atc-vol-icon">🔊</span>
-              <input type="range" min="0" max="100" value="80" class="atc-vol-slider"/>
+              <input type="range" min="0" max="100" value="80" class="atc-vol-slider" aria-label="Volume — TNCB Bonaire Tower"/>
             </div>
           </div>
         </div>
@@ -5694,11 +5699,19 @@ function injectWindyBadges(){
     const url = f.src || f.getAttribute('data-src') || '';
     const m = url.match(/[?&]overlay=([a-z]+)/);
     const box = f.closest('.radar-box');
-    if(!m || !box || box.querySelector('.map-layer-badge')) return;
+    if(!m || !box) return;
+    if(box.querySelector('.map-layer-badge')){
+      if(!f.getAttribute('title')) f.setAttribute('title', `Windy map — ${NAMES[m[1]] || m[1].toUpperCase()}`);
+      return;
+    }
+    const label = NAMES[m[1]] || m[1].toUpperCase();
     const b = document.createElement('span');
     b.className='map-layer-badge';
-    b.textContent = NAMES[m[1]] || m[1].toUpperCase();
+    b.textContent = label;
     box.appendChild(b);
+    // Same source of truth for the frame's accessible name — an untitled
+    // <iframe> is announced as an unlabelled frame by screen readers.
+    if(!f.getAttribute('title')) f.setAttribute('title', `Windy map — ${label}`);
   });
 }
 injectWindyBadges();
@@ -7437,13 +7450,13 @@ async function openWorldModal(icao){
         <div>
           <div class="wm-section-title" style="margin-bottom:6px">Windy Radar</div>
           <div class="radar-box">
-            <iframe class="windy-iframe" src="${windyBase('radar')}" frameborder="0" allowfullscreen></iframe>
+            <iframe class="windy-iframe" title="Windy map — precipitation radar" src="${windyBase('radar')}" frameborder="0" allowfullscreen></iframe>
           </div>
         </div>
         <div>
           <div class="wm-section-title" style="margin-bottom:6px">Windy Satellite</div>
           <div class="radar-box">
-            <iframe class="windy-iframe" src="${windyBase('satellite')}" frameborder="0" allowfullscreen></iframe>
+            <iframe class="windy-iframe" title="Windy map — satellite" src="${windyBase('satellite')}" frameborder="0" allowfullscreen></iframe>
           </div>
         </div>
       </div>
